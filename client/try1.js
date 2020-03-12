@@ -3,21 +3,10 @@ import * as THREE from 'three'
 
 import { makeGrids } from './fraviz/grid'
 
-var scene, camera, renderer, exporter, mesh, cameraRotationX, cameraRotationY;
-var PLANE_SIZE = 10000;
-
-let NO_SHAPES = false;
-let NUMBER_OF_GRIDS = 2;
-let GRID_ROTATION = 1;
-
+var scene, camera, renderer;
 
 // DEFAULT VALUES
 let BACKGROUND_COLOR = 0x000000;
-let PLANE_COLOR = 0x000000;
-let GRID_COLOR = 0x00ffff;
-let selectedValue = 10;
-let WIERD_CAMERA = false
-let MOVING_CAMERA = true;
 
 var volumeMaterial = new THREE.MeshPhongMaterial( { color: 0xfc0303, side: THREE.DoubleSide } );
 var tatumMaterial = new THREE.MeshPhongMaterial( { color: 0xfcf403, side: THREE.DoubleSide } );
@@ -33,16 +22,12 @@ let beatObject;
 let barObject;
 let sectionObject;
 
-var textGeo;
-
 let volumeText;
 let tatumText;
 let segmentText;
 let beatText;
 let barText;
 let sectionText;
-
-let gridObject;
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -54,10 +39,6 @@ function onWindowResize() {
 // (x, y, z)
 
 function createObjects() {
-
-  let x_position = -600;
-  let y_position = 0;
-  let z_position = -1000;
 
   const fontJson = require( "fonts/gentilis_regular.typeface.json" );
   const font = new THREE.Font( fontJson );
@@ -109,7 +90,6 @@ function createObjects() {
   scene.add(beatText)
   scene.add(barText)
   scene.add(sectionText)
-
 }
 
 export default class Try1 extends Visualizer {
@@ -126,13 +106,9 @@ export default class Try1 extends Visualizer {
      camera.position.set( -100, 100, 1000 );
      camera.lookAt( -100, 100, 0 );
 
-
      // SCENE
      scene = new THREE.Scene();
      scene.background = new THREE.Color( BACKGROUND_COLOR );
-
-     // FOG
-    //  scene.fog = new THREE.Fog( BACKGROUND_COLOR, 700, 1500 );
 
      // LIGHTS
      var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
@@ -155,73 +131,33 @@ export default class Try1 extends Visualizer {
 
      document.body.appendChild( renderer.domElement );
      window.addEventListener( 'resize', onWindowResize, false );
-     cameraRotationX = true;
-     cameraRotationY = true;
 
      makeGrids(scene, 2, 4700, 1);
      createObjects();
   }
   hooks () {
-    this.sync.on('tatum', tatum => {
-
-    })
-
-    this.sync.on('segment', segment => {
-
-    })
-
-    this.sync.on('beat', beat => {
-
-    })
-
-    this.sync.on('bar', bar => {
-
-    })
-
-    this.sync.on('section', section => {
-
-    })
   }
 
   paint ({ ctx, height, width, now }) {
-
-
     renderer.render( scene, camera );
 
     let speed = (this.sync.volume * 10) * (this.sync.volume * 10) * (this.sync.volume * 10)
     speed = speed / 50
 
     camera.position.z -= speed;
-    // console.log(speed)
 
     if(camera.position.z < -1000){
       camera.position.z = 1000;
     }
 
-    // this.sync.volume
-    // this.sync.tatum
-    // this.sync.segment
-    // this.sync.beat
-    // this.sync.bar
-    // this.sync.section
-
     let camZ = camera.position.z;
 
     let volume = this.sync.volume * 10;
-    // console.log(volume)
     let tatum = this.sync.tatum.confidence * 10;
-    // console.log(tatum)
     let segment = this.sync.segment.confidence * 10;
-    // console.log(segment)
-    // console.log(this.sync.segment)
     let beat = this.sync.beat.confidence * 10;
-    // console.log(beat)
     let bar = this.sync.bar.confidence * 10;
-    // console.log(bar)
     let section = this.sync.section.tempo * 0.1;
-    // console.log(section)
-    // console.log(this.sync.section)
-
 
     volumeObject.scale.set(volume ? volume : 0.00001 , volume ? volume : 0.00001 , volume ? volume : 0.00001 )
     tatumObject.scale.set(tatum ? tatum : 0.00001, tatum ? tatum : 0.00001, tatum ? tatum : 0.00001)
@@ -233,32 +169,30 @@ export default class Try1 extends Visualizer {
     let x_position = -900;
     let spacing = 300;
     let y_position = -300;
+    let z_position = -1000 + camZ;
 
-
-    volumeObject.position.set(x_position, 0, -1000 + camZ);
-    volumeText.position.set(x_position - 70, y_position, -1000 + camZ);
+    volumeObject.position.set(x_position, 0, z_position);
+    volumeText.position.set(x_position - 70, y_position, z_position);
     x_position += spacing;
 
-    tatumObject.position.set(x_position, 0, -1000 + camZ);
-    tatumText.position.set(x_position - 70, y_position, -1000 + camZ);
+    tatumObject.position.set(x_position, 0, z_position);
+    tatumText.position.set(x_position - 70, y_position, z_position);
     x_position += spacing;
 
-    segmentObject.position.set(x_position, 0, -1000 + camZ);
-    segmentText.position.set(x_position - 70, y_position, -1000 + camZ);
+    segmentObject.position.set(x_position, 0, z_position);
+    segmentText.position.set(x_position - 70, y_position, z_position);
     x_position += spacing;
 
-    beatObject.position.set(x_position, 0, -1000 + camZ);
-    beatText.position.set(x_position - 50, y_position, -1000 + camZ);
+    beatObject.position.set(x_position, 0, z_position);
+    beatText.position.set(x_position - 50, y_position, z_position);
     x_position += spacing;
 
-    barObject.position.set(x_position, 0, -1000 + camZ);
-    barText.position.set(x_position - 50, y_position, -1000 + camZ);
+    barObject.position.set(x_position, 0, z_position);
+    barText.position.set(x_position - 50, y_position, z_position);
     x_position += spacing;
 
-    sectionObject.position.set(x_position, 0, -1000 + camZ);
-    sectionText.position.set(x_position - 70, y_position, -1000 + camZ);
+    sectionObject.position.set(x_position, 0, z_position);
+    sectionText.position.set(x_position - 70, y_position, z_position);
     x_position += spacing;
-
-
   }
 }
