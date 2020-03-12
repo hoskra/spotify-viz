@@ -213,7 +213,7 @@ export default class Try1 extends Visualizer {
     // console.log(tatum)
     let segment = this.sync.segment.confidence * 10;
     // console.log(segment)
-    console.log(this.sync.segment)
+    // console.log(this.sync.segment)
     let beat = this.sync.beat.confidence * 10;
     // console.log(beat)
     let bar = this.sync.bar.confidence * 10;
@@ -223,12 +223,12 @@ export default class Try1 extends Visualizer {
     // console.log(this.sync.section)
 
 
-    volumeObject.scale.set(volume, volume, volume)
-    tatumObject.scale.set(tatum, tatum, tatum)
-    segmentObject.scale.set(segment, segment, segment)
-    beatObject.scale.set(beat, beat, beat)
-    barObject.scale.set(bar, bar, bar)
-    sectionObject.scale.set(section, section, section)
+    volumeObject.scale.set(volume ? volume : 0.00001 , volume ? volume : 0.00001 , volume ? volume : 0.00001 )
+    tatumObject.scale.set(tatum ? tatum : 0.00001, tatum ? tatum : 0.00001, tatum ? tatum : 0.00001)
+    segmentObject.scale.set(segment ? segment : 0.00001, segment ? segment : 0.00001, segment ? segment : 0.00001)
+    beatObject.scale.set(beat ? beat : 0.00001, beat ? beat : 0.00001, beat ? beat : 0.00001)
+    barObject.scale.set(bar ? bar : 0.00001, bar ? bar : 0.00001, bar ? bar : 0.00001)
+    sectionObject.scale.set(section ? section : 0.00001, section ? section : 0.00001, section ? section : 0.00001)
 
     let x_position = -900;
     let spacing = 300;
