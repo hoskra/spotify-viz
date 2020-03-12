@@ -10,6 +10,20 @@ export default class Example extends Visualizer {
   }
 
   hooks () {
+    // this.sync.on('tatum', tatum => {
+      // })
+
+      this.sync.on('segment', segment => {
+
+    })
+
+    // this.sync.on('beat', beat => {
+
+    // })
+
+    this.sync.on('section', section => {
+      console.log(section)
+    })
     this.sync.on('bar', beat => {
       this.lastColor = this.nextColor || getRandomElement(this.theme)
       this.nextColor = getRandomElement(this.theme.filter(color => color !== this.nextColor))
@@ -21,7 +35,7 @@ export default class Example extends Visualizer {
     const beat = interpolateBasis([0, this.sync.volume * 300, 0])(this.sync.beat.progress)
     ctx.fillStyle = 'rgba(0, 0, 0, .08)'
     ctx.fillRect(0, 0, width, height)
-    ctx.lineWidth = bar 
+    ctx.lineWidth = bar
     ctx.strokeStyle = interpolateRgb(this.lastColor, this.nextColor)(this.sync.bar.progress)
     sin(ctx, now / 50, height / 2, this.sync.volume * 50, 100)
     ctx.stroke()
@@ -31,5 +45,7 @@ export default class Example extends Visualizer {
     circle(ctx, width / 2, height / 2, this.sync.volume * height / 5 + beat / 10)
     ctx.stroke()
     ctx.fill()
+
+
   }
 }
