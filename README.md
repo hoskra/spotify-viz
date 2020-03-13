@@ -1,5 +1,4 @@
 # Fraviz
-> Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
 > Online version of [Fraviz](http://fraviz.herokuapp.com) available on heroku.
 
 ## About Music Visualization
@@ -10,6 +9,7 @@
 ---
 
 ## Developer Documentation
+> Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
 
 ### Used Libraries
 
