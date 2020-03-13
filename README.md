@@ -1,9 +1,16 @@
 # Fraviz
 > Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
+> Online version of [Fraviz](http://fraviz.herokuapp.com).
+
+## Useful links about music visualization
+* [Awesome audio visualization](https://github.com/willianjusten/awesome-audio-visualization)
+* [Notes on Music Information Retrieval](https://musicinformationretrieval.com)
 
 ## Used libraries
-* [three.js](https://github.com/mrdoob/three.js/).
-* [d3-interpolate](https://github.com/d3/d3-interpolate).
+* [three.js](https://github.com/mrdoob/three.js/)
+* [d3-interpolate](https://github.com/d3/d3-interpolate)
+
+---
 
 ## Running Locally
 
