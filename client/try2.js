@@ -9,6 +9,7 @@ let TRIPLE = false;
 let OUTPUT_PITCH = false
 let FACTOR_OF_SHORTENING = 0.5
 let BACKGROUND_COLOR = 0x000000;
+let ROTATING_CAMERA = false;
 
 // VARIABLES
 var scene, camera, renderer;
@@ -195,27 +196,31 @@ export default class Try1 extends Visualizer {
     }
   }
 
+  // volume | tatum | segment | beat | bar | section
+
   paint ({ ctx, height, width, now }) {
     renderer.render( scene, camera );
     let tatumID = this.sync.tatum.index % 2 ? this.sync.tatum.progress : 1 - this.sync.tatum.progress
-    let speedTatum = d3.interpolateNumber(this.sync.volume, tatumID)
+    let vol = this.sync.volume ? this.sync.volume : 0.5
+    let speedTatum =  d3.interpolateNumber(vol, tatumID)
     let speedTatumInterpolated = speedTatum(0.5)
 
     let speed = (this.sync.volume * 10) * (this.sync.volume * 10) * (this.sync.volume * 10)
     speed = speed / 50
 
     camera.position.z -= speed
-    // camera.rotation.z -= speed
+
+    if(ROTATING_CAMERA){
+      if(camera.position.z > 20){
+        camera.rotation.z -= speed/60000
+      } else{
+        camera.rotation.z += speed/60000
+      }
+    }
+
     if(camera.position.z < -1000){ camera.position.z = 1000; }
 
     let camZ = camera.position.z;
-
-    let volume = this.sync.volume * 10;
-    let tatum = this.sync.tatum.confidence * 10;
-    let segment = this.sync.segment.confidence * 10;
-    let beat = this.sync.beat;
-    let bar = this.sync.bar.confidence * 10;
-    let section = this.sync.section.tempo * 0.1;
 
     let x_position = -100;
     let y_position = 0;
@@ -232,8 +237,11 @@ export default class Try1 extends Visualizer {
     this.sync.beat.index % 2 ? group3.rotateZ(-1 * (Math.PI/180)) : group3.rotateZ(1 * (Math.PI/180))
 
     let scale = this.sync.bar.index % 2 ? this.sync.bar.progress : 1 - this.sync.bar.progress
-    let scaleFactor = d3.interpolateNumber(this.sync.volume, scale)
+    let scaleFactor = d3.interpolateNumber(vol, scale)
     scale = scaleFactor(0.5)
+
+    group2.scale.set(speedTatumInterpolated, speedTatumInterpolated, speedTatumInterpolated)
+    group3.scale.set(speedTatumInterpolated, speedTatumInterpolated, speedTatumInterpolated)
 
     group4.scale.set(scale, scale, scale)
     group5.scale.set(scale, scale, scale)
@@ -241,7 +249,7 @@ export default class Try1 extends Visualizer {
     this.sync.bar.index % 2 ? group4.rotateZ(1 * (Math.PI/180)) : group4.rotateZ(-1 * (Math.PI/180))
     this.sync.bar.index % 2 ? group5.rotateZ(-1 * (Math.PI/180)) : group5.rotateZ(1 * (Math.PI/180))
 
-    let scaleFactor2 = d3.interpolateNumber(this.sync.volume, tatumID)
+    let scaleFactor2 = d3.interpolateNumber(vol, tatumID)
     tatumID = scaleFactor2(0.5)
     this.sync.tatum.index % 2 ? group6.rotateX(-5 * (Math.PI/180)) : group6.rotateX(5 * (Math.PI/180))
 
