@@ -1,18 +1,22 @@
 # Fraviz
 > Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
-> Online version of [Fraviz](http://fraviz.herokuapp.com).
+> Online version of [Fraviz](http://fraviz.herokuapp.com) available on heroku.
 
-## Useful links about music visualization
+## About Music Visualization
+
 * [Awesome audio visualization](https://github.com/willianjusten/awesome-audio-visualization)
 * [Notes on Music Information Retrieval](https://musicinformationretrieval.com)
 
-## Used libraries
+---
+
+## Developer Documentation
+
+### Used Libraries
+
 * [three.js](https://github.com/mrdoob/three.js/)
 * [d3-interpolate](https://github.com/d3/d3-interpolate)
 
----
-
-## Running Locally
+### Running Locally
 
 1. Create a new Spotify app in your [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/).
 2. Add `http://localhost:8001/callback` to your app's Redirect URIs. Note your app's `Client ID` and `Client Secret`.
