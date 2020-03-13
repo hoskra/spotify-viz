@@ -187,5 +187,5 @@ export default class Try1 extends Visualizer {
 
     this.sync.bar.index % 2 ? tree1.rotateX(-0.1 * (Math.PI/180)) : tree1.rotateX(0.1 * (Math.PI/180))
     this.sync.beat.index % 2 ? tree2.rotateX(-0.1 * (Math.PI/180)) : tree2.rotateX(0.1 * (Math.PI/180))
-}
+  }
 }
