@@ -1,9 +1,11 @@
+:toc:
+
 # Fraviz
 > Online version of [Fraviz](http://fraviz.herokuapp.com) available on heroku.
 
 ## About Music Visualization
 
-* [Awesome audio visualization](https://github.com/willianjusten/awesome-audio-visualization)
+* [Awesome Audio Visualization](https://github.com/willianjusten/awesome-audio-visualization)
 * [Notes on Music Information Retrieval](https://musicinformationretrieval.com)
 
 ---
