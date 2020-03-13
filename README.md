@@ -1,5 +1,3 @@
-:toc:
-
 # Fraviz
 > Online version of [Fraviz](http://fraviz.herokuapp.com) available on heroku.
 
