@@ -37,6 +37,8 @@ html, body, canvas {
   &#mode {
     left: 0px;
     top: 0px;
+    display: flex;
+    flex-flow: row;
 
     & button {
       background-color: rgba(255,255,255,0.1);
@@ -71,7 +73,7 @@ html, body, canvas {
     color: white;
     right: 0px;
     top: 0px;
-
+  
     .stat-explanation {
       display: block;
       margin: 5px;
@@ -110,5 +112,16 @@ html, body, canvas {
     &#song {
       font-size: 1em;
     }
+
+    &#mode {
+      flex-flow: column;
+    }
+  }
+
+
+  #stats-table {
+    height: 100px;
+    overflow-y: scroll;
+    overflow-x: hidden;
   }
 }
