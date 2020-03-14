@@ -2,17 +2,40 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Spotify Viz</title>
+    <title>Fraviz</title>
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
     <style>
       *, *:before, *:after {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
+        font-family: monospace;
       }
+
     </style>
+    <script
+    src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+    crossorigin="anonymous"></script>
   </head>
   <body>
+
+    <div class="gui" id="mode">
+      <button id="2">2</button><button id="3">3</button><button id="4">4</button>
+    </div>
+
+    <div class="gui" id="stats">Loading ...</div>
+
+    <div class="gui" id="song">
+      <span id="song-artist"></span>
+      <span id="song-name"></span>
+    </div>
+
+    <div class="gui" id="about">
+      <span class="site-name">fraviz</span>
+      <span class="repo"><a target="_blank" href="https://github.com/hoskra/fraviz">about</a></span>
+    </div>
+
     <noscript>Oops! JavaScript is required to run this page.</noscript>
-  </body> 
+  </body>
 </html>

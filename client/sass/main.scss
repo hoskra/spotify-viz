@@ -11,3 +11,73 @@ html, body, canvas {
   left: 0;
   overflow: hidden;
 }
+
+.gui {
+  display: block;
+  position: absolute;
+  z-index: 5;
+  color: white;
+  padding: 2em;
+
+  & span {
+    display: block;
+  }
+
+  &#mode {
+    left: 0px;
+    top: 0px;
+
+    & button {
+      background-color: rgba(255,255,255,0.1);
+      margin-right: 0.6em;
+      padding: 0.5em 0.8em;
+      border: 1px dashed white;
+      color: white;
+    }
+  }
+
+  &#song {
+    font-size: 1.6em;
+    left: 0px;
+    bottom: 0px;
+
+    & #song-name {
+      padding-left: 2em
+     }
+  }
+
+  &#about {
+    text-align: right;
+    right: 0px;
+    bottom: 0px;
+
+    & .repo a, a:hover, a:visited{
+      color:yellow
+    }
+  }
+
+  &#stats {
+    color: white;
+    right: 0px;
+    top: 0px;
+
+    tr{
+      margin: 0.2em;
+      background-color: white;
+      color: black;
+
+      td:first-child {
+        text-align: right;
+        padding-right: 0.4em;
+      }
+
+      td:last-child {
+        text-align: center;
+      }
+    }
+  }
+}
+
+.hiden {
+  display: none;
+}
