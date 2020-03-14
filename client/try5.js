@@ -2,6 +2,7 @@ import Visualizer from './classes/visualizer'
 import * as THREE from 'three'
 
 import { makeGrids } from './fraviz/grid'
+import { setupScene } from './fraviz/base'
 
 var scene, camera, renderer;
 
@@ -15,28 +16,9 @@ var beatMaterial = new THREE.MeshPhongMaterial( { color: 0x03fcf0, side: THREE.D
 var barMaterial = new THREE.MeshPhongMaterial( { color: 0x0320fc, side: THREE.DoubleSide } );
 var sectionMaterial = new THREE.MeshPhongMaterial( { color: 0xfc03fc, side: THREE.DoubleSide } );
 
-let volumeObject;
-let tatumObject;
-let segmentObject;
-let beatObject;
-let barObject;
-let sectionObject;
+let volumeObject, tatumObject, segmentObject, beatObject, barObject, sectionObject;
+let volumeText, tatumText, segmentText, beatText, barText, sectionText;
 
-let volumeText;
-let tatumText;
-let segmentText;
-let beatText;
-let barText;
-let sectionText;
-
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize( window.innerWidth, window.innerHeight );
-}
-
-// ( left-right, up-down, front-behind )
-// (x, y, z)
 
 function createObjects() {
 
@@ -92,48 +74,18 @@ function createObjects() {
   scene.add(sectionText)
 }
 
-export default class Try4 extends Visualizer {
+export default class Try5 extends Visualizer {
   constructor () {
     super({ volumeSmoothing: 100 })
 
-    let canvas = document.getElementsByTagName('canvas')
-    for (let element of canvas) {
-      element.parentNode.removeChild(element);
-    }
+    camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight , 1, 10000 );
+    scene = new THREE.Scene();
+    renderer = new THREE.WebGLRenderer( { antialias: true } );
 
-     // CAMERA
-     camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight , 1, 10000 );
-     camera.position.set( -100, 100, 1000 );
-     camera.lookAt( -100, 100, 0 );
+    setupScene(camera, scene, renderer, BACKGROUND_COLOR);
 
-     // SCENE
-     scene = new THREE.Scene();
-     scene.background = new THREE.Color( BACKGROUND_COLOR );
-
-     // LIGHTS
-     var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-     hemiLight.position.set( 0, 400, 0 );
-     scene.add( hemiLight );
-     var directionalLight = new THREE.DirectionalLight( 0xffffff );
-     directionalLight.position.set( 0, 200, 100 );
-     directionalLight.castShadow = true;
-     directionalLight.shadow.camera.top = 180;
-     directionalLight.shadow.camera.bottom = - 100;
-     directionalLight.shadow.camera.left = - 120;
-     directionalLight.shadow.camera.right = 120;
-     scene.add( directionalLight );
-
-     // RENDERER
-     renderer = new THREE.WebGLRenderer( { antialias: true } );
-     renderer.setPixelRatio( window.devicePixelRatio );
-     renderer.setSize( window.innerWidth, window.innerHeight );
-     renderer.shadowMap.enabled = true;
-
-     document.body.appendChild( renderer.domElement );
-     window.addEventListener( 'resize', onWindowResize, false );
-
-     makeGrids(scene, 2, 4700, 1);
-     createObjects();
+    makeGrids(scene, 2, 4700, 1);
+    createObjects();
   }
   hooks () {
   }

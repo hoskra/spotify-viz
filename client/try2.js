@@ -100,7 +100,7 @@ function wannaBeFractal(group, color) {
 
 
 
-export default class Try1 extends Visualizer {
+export default class Try2 extends Visualizer {
   constructor () {
     super({ volumeSmoothing: 100 })
 

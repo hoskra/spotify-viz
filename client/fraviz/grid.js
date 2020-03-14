@@ -33,7 +33,6 @@ function customGrid(y, xRotation = 0, yRotation = 0, zRotation = 0, degree = Mat
     }
 
     return grid_line;
-    scene.add(grid_line);
 }
 
 export function makeGrids(scene, numberOfGrids, spaceBetween, rotation) {

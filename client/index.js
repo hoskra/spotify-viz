@@ -4,45 +4,43 @@ import Try1 from './try1'
 import Try2 from './try2'
 import Try3 from './try3'
 import Try4 from './try4'
+import Try5 from './try5'
 
 import Visualizer from './classes/visualizer'
 
+let GUI_MODE = 1;
+let SONG_ID = "";
+
 let artist, name;
-
-let danceability;
-let energy;
-let key;
-let loudness;
-let mode;
-let speechiness;
-let acousticness;
-let instrumentalness;
-let liveness;
-let valence;
-let tempo;
-
-let hiddenGui = false;
+let danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo;
 
 class Index extends Visualizer {
   constructor () {
     super({ volumeSmoothing: 100 })
 
     if (window.location.hash === '#start') {
+      if (GUI_MODE === 0) {$(".gui").removeClass("hiden");} else if (GUI_MODE === 1) {$(".gui").addClass("hiden");$("#song").removeClass("hiden");} else {$("#song").addClass("hiden");}
 
       $('body').keyup(function(e){
+        // user has pressed space
         if(e.keyCode == 32){
-            // user has pressed space
-            if (hiddenGui) {
-              hiddenGui = false;
+          GUI_MODE++
+          GUI_MODE = GUI_MODE % 3
+          if (GUI_MODE === 0) {
+              // all visible
               $(".gui").removeClass("hiden");
-            } else {
-              hiddenGui = true;
+            } else if (GUI_MODE === 1) {
+              // just song name and artist visible
               $(".gui").addClass("hiden");
+              $("#song").removeClass("hiden");
+            } else {
+              // all hidden
+              $("#song").addClass("hiden");
             }
         }
      });
 
-      let app = new Try3();
+      let app = new Try5();
 
       $("#2").click(()=>{
         app = undefined
@@ -55,6 +53,10 @@ class Index extends Visualizer {
       $("#4").click(()=>{
         app = undefined
         app = new Try4()
+      })
+      $("#5").click(()=>{
+        app = undefined
+        app = new Try5()
       })
 
   } else {
@@ -73,6 +75,15 @@ paint ({ ctx, height, width, now }) {
 
     $("#song-artist").html(artist)
     $("#song-name").html(name)
+
+    if (SONG_ID) {
+      if (this.sync.state.currentlyPlaying.id != SONG_ID) {
+        location.reload();
+      }
+    }
+
+    SONG_ID = this.sync.state.currentlyPlaying.id;
+
 
     danceability = this.sync.state.trackFeatures.danceability;
     energy = this.sync.state.trackFeatures.energy;

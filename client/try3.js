@@ -78,7 +78,7 @@ function createTreeGeometry() {
 let tree1, tree2;
 
 
-export default class Try1 extends Visualizer {
+export default class Try3 extends Visualizer {
   constructor () {
     super({ volumeSmoothing: 100 })
 
