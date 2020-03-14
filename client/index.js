@@ -69,7 +69,7 @@ paint ({ ctx, height, width, now }) {
     artist = this.sync.state.currentlyPlaying.artists[0].name
     name = this.sync.state.currentlyPlaying.name
 
-    $("#no-song").html("")
+    $("#no-song").addClass("hiden")
 
     $("#song-artist").html(artist)
     $("#song-name").html(name)
