@@ -11,20 +11,30 @@
         box-sizing: border-box;
         font-family: monospace;
       }
-
     </style>
     <script
-    src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
-    crossorigin="anonymous"></script>
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+      crossorigin="anonymous"></script>
   </head>
   <body>
+
+    <div class="gui" id="no-song">
+      <span>Please log in and play a song with Spotify!</span>
+    </div>
 
     <div class="gui" id="mode">
       <button id="2">2</button><button id="3">3</button><button id="4">4</button>
     </div>
 
-    <div class="gui" id="stats">Loading ...</div>
+    <div class="gui" id="stats">
+      <div id="stats-table">
+        Loading ...
+      </div>
+      <span class="stat-explanation">
+        <a href="https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/" target="_blank">stat explanation</a>
+      </span>
+    </div>
 
     <div class="gui" id="song">
       <span id="song-artist"></span>

@@ -12,12 +12,23 @@ html, body, canvas {
   overflow: hidden;
 }
 
+#no-song {
+    position: absolute;
+    z-index: 10;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2em;
+}
+
 .gui {
   display: block;
   position: absolute;
   z-index: 5;
   color: white;
-  padding: 2em;
+  padding: 20px;
 
   & span {
     display: block;
@@ -61,7 +72,17 @@ html, body, canvas {
     right: 0px;
     top: 0px;
 
-    tr{
+    .stat-explanation {
+      display: block;
+      margin: 5px;
+      text-align: right;
+      & a, a:hover, a:visited{
+        background-color: black;
+        color:yellow;
+      }
+    }
+
+    tr {
       margin: 0.2em;
       background-color: white;
       color: black;
@@ -80,4 +101,14 @@ html, body, canvas {
 
 .hiden {
   display: none;
+}
+
+@media only screen and (max-width: 600px) {
+  .gui {
+    padding: 10px;
+    
+    &#song {
+      font-size: 1em;
+    }
+  }
 }

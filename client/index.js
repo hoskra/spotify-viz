@@ -8,7 +8,6 @@ import Try4 from './try4'
 import Visualizer from './classes/visualizer'
 
 let artist, name;
-let artistElement, nameElement;
 
 let danceability;
 let energy;
@@ -21,7 +20,6 @@ let instrumentalness;
 let liveness;
 let valence;
 let tempo;
-let duration_ms;
 
 let hiddenGui = false;
 
@@ -71,6 +69,8 @@ paint ({ ctx, height, width, now }) {
     artist = this.sync.state.currentlyPlaying.artists[0].name
     name = this.sync.state.currentlyPlaying.name
 
+    $("#no-song").html("")
+
     $("#song-artist").html(artist)
     $("#song-name").html(name)
 
@@ -85,9 +85,8 @@ paint ({ ctx, height, width, now }) {
     liveness = this.sync.state.trackFeatures.liveness;
     valence = this.sync.state.trackFeatures.valence;
     tempo = this.sync.state.trackFeatures.tempo;
-    duration_ms = this.sync.state.trackFeatures.duration_ms;
 
-    $("#stats").html(
+    $("#stats-table").html(
       "<table>" +
         "<tr><td>danceability</td><td>" + danceability + "</td></tr>" +
         "<tr><td>energy</td><td>" + energy + "</td></tr>" +
@@ -100,7 +99,6 @@ paint ({ ctx, height, width, now }) {
         "<tr><td>liveness</td><td>" + liveness + "</td></tr>" +
         "<tr><td>valence</td><td>" + valence + "</td></tr>" +
         "<tr><td>tempo</td><td>" + tempo + "</td></tr>" +
-        "<tr><td>duration_ms</td><td>" + duration_ms + "</td></tr>" +
       "</table>"
     )
 
