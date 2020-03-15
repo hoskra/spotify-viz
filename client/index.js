@@ -6,6 +6,7 @@ import Try3 from './try3'
 import Try4 from './try4'
 import Try5 from './try5'
 
+import IndexData from './classes/indexData'
 import Visualizer from './classes/visualizer'
 
 let GUI_MODE = 1;
@@ -15,6 +16,9 @@ let JUST_ONCE = true;
 
 let artist, name;
 let danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo;
+
+// $(".gui").addClass("hiden");
+// let app = new Try5()
 
 class Index extends Visualizer {
   constructor () {
@@ -54,10 +58,6 @@ class Index extends Visualizer {
       })
       $("#4").click(()=>{
         app = undefined
-        app = new Try4()
-      })
-      $("#5").click(()=>{
-        app = undefined
         app = new Try5()
       })
 
@@ -80,7 +80,7 @@ paint ({ ctx, height, width, now }) {
 
     if (SONG_ID) {
       if (this.sync.state.currentlyPlaying.id != SONG_ID) {
-        // location.reload();
+        location.reload();
       }
     }
 
@@ -88,7 +88,7 @@ paint ({ ctx, height, width, now }) {
 
     if(JUST_ONCE) {
       JUST_ONCE = false;
-      console.log(this.sync.state)
+      // console.log(this.sync.state)
     }
 
     danceability = this.sync.state.trackFeatures.danceability;

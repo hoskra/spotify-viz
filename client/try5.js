@@ -3,195 +3,156 @@ import * as THREE from 'three'
 
 import { makeGrids } from './fraviz/grid'
 import { setupScene } from './fraviz/base'
+import { createDummyObjects, moveDummyObjects, scaleDummyObjects } from './fraviz/dummyObjects'
 
 var scene, camera, renderer;
 
 // DEFAULT VALUES
 let BACKGROUND_COLOR = 0x000000;
 
-var volumeMaterial = new THREE.MeshPhongMaterial( { color: 0xfc0303, side: THREE.DoubleSide } );
-var tatumMaterial = new THREE.MeshPhongMaterial( { color: 0xfcf403, side: THREE.DoubleSide } );
-var segmentMaterial = new THREE.MeshPhongMaterial( { color: 0x03fc0f, side: THREE.DoubleSide } );
-var beatMaterial = new THREE.MeshPhongMaterial( { color: 0x03fcf0, side: THREE.DoubleSide } );
-var barMaterial = new THREE.MeshPhongMaterial( { color: 0x0320fc, side: THREE.DoubleSide } );
-var sectionMaterial = new THREE.MeshPhongMaterial( { color: 0xfc03fc, side: THREE.DoubleSide } );
+let CAMERA_START = 10000;
+let CAMERA_STEP = 800;
 
-let volumeObject, tatumObject, segmentObject, beatObject, barObject, sectionObject;
-let volumeText, tatumText, segmentText, beatText, barText, sectionText;
+let CAMERA_POSITION_0 = CAMERA_START - CAMERA_STEP * 0;
+let CAMERA_POSITION_1 = CAMERA_START - CAMERA_STEP * 1;
+let CAMERA_POSITION_2 = CAMERA_START - CAMERA_STEP * 2;
+let CAMERA_POSITION_3 = CAMERA_START - CAMERA_STEP * 3;
+let CAMERA_POSITION_4 = CAMERA_START - CAMERA_STEP * 4;
+let CAMERA_POSITION_5 = CAMERA_START - CAMERA_STEP * 5;
+let CAMERA_POSITION_6 = CAMERA_START - CAMERA_STEP * 6;
+let CAMERA_POSITION_7 = CAMERA_START - CAMERA_STEP * 7;
+let CAMERA_POSITION_8 = CAMERA_START - CAMERA_STEP * 8;
+let CAMERA_POSITION_9 = CAMERA_START - CAMERA_STEP * 9;
+let CAMERA_POSITION_10 = CAMERA_START - CAMERA_STEP * 10;
 
-let COUNTER = 1;
-
-let group = new THREE.Group();
-
-function createObjects() {
-
-  const fontJson = require( "fonts/gentilis_regular.typeface.json" );
-  const font = new THREE.Font( fontJson );
-
-  var volumeGeo  = new THREE.TextGeometry( 'volume', { font: font,size: 55,height: 5,curveSegments: 12,bevelEnabled: true,bevelThickness: 10,bevelSize: 8,bevelOffset: 0,bevelSegments: 5} );
-  volumeGeo.computeBoundingBox();
-  volumeGeo.computeVertexNormals()
-  var tatumGeo  = new THREE.TextGeometry( 'tatum', { font: font,size: 55,height: 5,curveSegments: 12,bevelEnabled: true,bevelThickness: 10,bevelSize: 8,bevelOffset: 0,bevelSegments: 5} );
-  tatumGeo.computeBoundingBox();
-  tatumGeo.computeVertexNormals()
-  var segmentGeo  = new THREE.TextGeometry( 'segment', { font: font,size: 55,height: 5,curveSegments: 12,bevelEnabled: true,bevelThickness: 10,bevelSize: 8,bevelOffset: 0,bevelSegments: 5} );
-  segmentGeo.computeBoundingBox();
-  segmentGeo.computeVertexNormals()
-  var beatGeo  = new THREE.TextGeometry( 'beat', { font: font,size: 55,height: 5,curveSegments: 12,bevelEnabled: true,bevelThickness: 10,bevelSize: 8,bevelOffset: 0,bevelSegments: 5} );
-  beatGeo.computeBoundingBox();
-  beatGeo.computeVertexNormals()
-  var barGeo  = new THREE.TextGeometry( 'bar', { font: font,size: 55,height: 5,curveSegments: 12,bevelEnabled: true,bevelThickness: 10,bevelSize: 8,bevelOffset: 0,bevelSegments: 5} );
-  barGeo.computeBoundingBox();
-  barGeo.computeVertexNormals()
-  var sectionGeo  = new THREE.TextGeometry( 'section', { font: font,size: 55,height: 5,curveSegments: 12,bevelEnabled: true,bevelThickness: 10,bevelSize: 8,bevelOffset: 0,bevelSegments: 5} );
-  sectionGeo.computeBoundingBox();
-  sectionGeo.computeVertexNormals()
-
-  volumeObject = new THREE.Mesh( new THREE.SphereBufferGeometry( 10 ), volumeMaterial );
-  tatumObject = new THREE.Mesh( new THREE.SphereBufferGeometry( 10 ), tatumMaterial );
-  segmentObject = new THREE.Mesh( new THREE.SphereBufferGeometry( 10 ), segmentMaterial );
-  beatObject = new THREE.Mesh( new THREE.SphereBufferGeometry( 10 ), beatMaterial );
-  barObject = new THREE.Mesh( new THREE.SphereBufferGeometry( 10 ), barMaterial );
-  sectionObject = new THREE.Mesh( new THREE.SphereBufferGeometry( 10 ), sectionMaterial );
-
-  volumeText = new THREE.Mesh( new THREE.BufferGeometry().fromGeometry( volumeGeo ), volumeMaterial );
-  tatumText = new THREE.Mesh( new THREE.BufferGeometry().fromGeometry( tatumGeo ), tatumMaterial );
-  segmentText = new THREE.Mesh( new THREE.BufferGeometry().fromGeometry( segmentGeo ), segmentMaterial );
-  beatText = new THREE.Mesh( new THREE.BufferGeometry().fromGeometry( beatGeo ), beatMaterial );
-  barText = new THREE.Mesh( new THREE.BufferGeometry().fromGeometry( barGeo ), barMaterial );
-  sectionText = new THREE.Mesh( new THREE.BufferGeometry().fromGeometry( sectionGeo ), sectionMaterial );
+let CAMERA_POSITIONS = [ CAMERA_POSITION_0, CAMERA_POSITION_1, CAMERA_POSITION_2, CAMERA_POSITION_3, CAMERA_POSITION_4, CAMERA_POSITION_5, CAMERA_POSITION_6, CAMERA_POSITION_7, CAMERA_POSITION_8, CAMERA_POSITION_9, CAMERA_POSITION_10 ]
 
 
-  scene.add(volumeObject)
-  scene.add(tatumObject)
-  scene.add(segmentObject)
-  scene.add(beatObject)
-  scene.add(barObject)
-  scene.add(sectionObject)
-
-  scene.add(volumeText)
-  scene.add(tatumText)
-  scene.add(segmentText)
-  scene.add(beatText)
-  scene.add(barText)
-  scene.add(sectionText)
+function move0(pitches) {
+  group0.pitch(pitches)
+  group10.pitch(pitches)
+  group110.pitch(pitches)
+  group1110.pitch(pitches)
+}
+function move1(pitches) {
+  group1.pitch(pitches)
+  group11.pitch(pitches)
+  group111.pitch(pitches)
+  group1111.pitch(pitches)
+}
+function move2(pitches) {
+  group2.pitch(pitches)
+  group12.pitch(pitches)
+  group112.pitch(pitches)
+  group1112.pitch(pitches)
+}
+function move3(pitches) {
+  group3.pitch(pitches)
+  group13.pitch(pitches)
+  group113.pitch(pitches)
+  group1113.pitch(pitches)
+}
+function move4(pitches) {
+  group4.pitch(pitches)
+  group14.pitch(pitches)
+  group114.pitch(pitches)
+  group1114.pitch(pitches)
+}
+function move5(pitches) {
+  group5.pitch(pitches)
+  group15.pitch(pitches)
+  group115.pitch(pitches)
+  group1115.pitch(pitches)
+}
+function move6(pitches) {
+  group6.pitch(pitches)
+  group16.pitch(pitches)
+  group116.pitch(pitches)
+  group1116.pitch(pitches)
+}
+function move7(pitches) {
+  group7.pitch(pitches)
+  group17.pitch(pitches)
+  group117.pitch(pitches)
+  group1117.pitch(pitches)
+}
+function move8(pitches) {
+  group8.pitch(pitches)
+  group18.pitch(pitches)
+  group118.pitch(pitches)
+  group1118.pitch(pitches)
+}
+function move9(pitches) {
+  group9.pitch(pitches)
+  group19.pitch(pitches)
+  group119.pitch(pitches)
+  group1119.pitch(pitches)
 }
 
-let cube0, cube1, cube2, cube3, cube4, cube5, cube6, cube7, cube8, cube9, cube10, cube11;
-let CAMERA_STATE = 0;
+// function travellAll(allGroups) {
+//   console.log(allGroups)
+//   allGroups.forEach(group => {
+//     group.travel()
+//   });
+// }
 
-function createMountains(pitches, x, y, z, counter) {
-  let newX = x;
-  let newZ = z + 100 * counter;
+class Spectrum{
+  constructor (x, y, z, spacing, material, side) {
+    let group = new THREE.Group();
 
-  let cube0 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[0] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube0)
-  cube0.position.set(newX, y, newZ)
+    for(let i=0; i <=11; i++){
+      let cube = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), material);
+      group.add(cube)
+    }
 
-  let cube1 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[1] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube1)
-  cube1.position.set(newX, y, newZ)
+    group.children.forEach((cube, index) => {
+      cube.position.set(x - index*spacing, y, z)
+    });
 
-  let cube2 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[2] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube2)
-  cube2.position.set(newX, y, newZ)
+    this.x = x
+    this.y = y
+    this.spacing = spacing
+    this.group = group;
+    this.factor = 15;
+    this.side = side
 
-  let cube3 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[3] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube3)
-  cube3.position.set(newX, y, newZ)
+    scene.add(group)
+  }
 
-  let cube4 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[4] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube4)
-  cube4.position.set(newX, y, newZ)
+  pitch(pitch){
+    this.group.children.forEach((cube, index) => {
+      cube.scale.set(1, this.factor * pitch[index], 1)
+      cube.position.x = this.x + index* this.spacing
+      // console.log(cube.position.y)
+      if (cube.position.y >= -1300) {
+        // console.log("YES")
+        cube.material.opacity = 1
+      }
 
-  let cube5 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[5] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube5)
-  cube5.position.set(newX, y, newZ)
+      cube.position.y = this.y
 
-  let cube6 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[6] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube6)
-  cube6.position.set(newX, y, newZ)
+    });
+  }
 
-  let cube7 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[7] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube7)
-  cube7.position.set(newX, y, newZ)
+  travel(){
+    this.group.children.forEach((cube) => {
+      cube.position.x+= this.side ? -90 : 90
+      cube.position.y-= 40
 
-  let cube8 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[8] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube8)
-  cube8.position.set(newX, y, newZ)
+      if (cube.material.opacity >= 0)  {
+        cube.material.opacity -= 0.0001
+      }
 
-  let cube9 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[9] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube9)
-  cube9.position.set(newX, y, newZ)
-
-  let cube10 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[10] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube10)
-  cube10.position.set(newX, y, newZ)
-
-  let cube11 = new THREE.Mesh( new THREE.BoxGeometry( 100, pitches[11] * 100, 100 ), beatMaterial );
-  newX += 100
-  group.add(cube11)
-  cube11.position.set(newX, y, newZ)
-
-  scene.add(group)
-
+    });
+  }
 }
 
-function segments() {
-  let newX = 500
-  let newY = -300
-  let newZ = 200
-  let spacing = - 300
+let group0, group1, group2, group3, group4, group5, group6, group7, group8, group9;
+let group10, group11, group12, group13, group14, group15, group16, group17, group18, group19;
 
-  // green
-  let near = -2400
-  // na -900 bez hybaci kamery
+let group110, group111, group112, group113, group114, group115, group116, group117, group118, group119;
+let group1110, group1111, group1112, group1113, group1114, group1115, group1116, group1117, group1118, group1119;
 
-  // red
-  let far = 500
-  // na 600 vidim
-
-  cube0 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), segmentMaterial );
-  scene.add(cube0)
-
-  cube1 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), tatumMaterial );
-  scene.add(cube1)
-
-  cube2 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube2)
-
-  cube3 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube3)
-
-  cube4 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube4)
-
-  cube5 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube5)
-
-  cube6 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube6)
-
-  cube7 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube7)
-
-  cube8 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), beatMaterial );
-  scene.add(cube8)
-
-  cube9 = new THREE.Mesh( new THREE.BoxGeometry( 100, 100, 100 ), volumeMaterial );
-  scene.add(cube9)
-}
 
 export default class Try5 extends Visualizer {
   constructor () {
@@ -204,9 +165,67 @@ export default class Try5 extends Visualizer {
     setupScene(camera, scene, renderer, BACKGROUND_COLOR);
 
     makeGrids(scene, 2, 4700, 1);
-    createObjects();
-    segments();
-    camera.position.z = 4000;
+    createDummyObjects(scene);
+    camera.position.z = CAMERA_POSITIONS[0];
+
+
+    let green = new THREE.MeshPhongMaterial( { color: 0x03fc0f, opacity: 0, transparent: true, side: THREE.DoubleSide } )
+    let turq = new THREE.MeshPhongMaterial( { color: 0x03fcf0, opacity: 0, transparent: true, side: THREE.DoubleSide } )
+
+    let x = 100
+    let y = -1200
+    let spacing = 300
+
+    let cubeSpacing = 800
+    let start = -4000
+
+    group0 = new Spectrum(x, y, start + cubeSpacing * 0, spacing, green, 0)
+    group1 = new Spectrum(x, y, start + cubeSpacing * 1, spacing, turq, 0)
+    group2 = new Spectrum(x, y, start + cubeSpacing * 2, spacing, green, 0)
+    group3 = new Spectrum(x, y, start + cubeSpacing * 3, spacing, turq, 0)
+    group4 = new Spectrum(x, y, start + cubeSpacing * 4, spacing, green, 0)
+    group5 = new Spectrum(x, y, start + cubeSpacing * 5, spacing, turq, 0)
+    group6 = new Spectrum(x, y, start + cubeSpacing * 6, spacing, green, 0)
+    group7 = new Spectrum(x, y, start + cubeSpacing * 7, spacing, turq, 0)
+    group8 = new Spectrum(x, y, start + cubeSpacing * 8, spacing, green, 0)
+    group9 = new Spectrum(x, y, start + cubeSpacing * 9, spacing, turq, 0)
+    group10 = new Spectrum(x, y, start + cubeSpacing * 10, spacing, green, 0)
+    group11 = new Spectrum(x, y, start + cubeSpacing * 11, spacing, turq, 0)
+    group12 = new Spectrum(x, y, start + cubeSpacing * 12, spacing, green, 0)
+    group13 = new Spectrum(x, y, start + cubeSpacing * 13, spacing, turq, 0)
+    group14 = new Spectrum(x, y, start + cubeSpacing * 14, spacing, green, 0)
+    group15 = new Spectrum(x, y, start + cubeSpacing * 15, spacing, turq, 0)
+    group16 = new Spectrum(x, y, start + cubeSpacing * 16, spacing, green, 0)
+    group17 = new Spectrum(x, y, start + cubeSpacing * 17, spacing, turq, 0)
+    group18 = new Spectrum(x, y, start + cubeSpacing * 18, spacing, green, 0)
+    group19 = new Spectrum(x, y, start + cubeSpacing * 19, spacing, turq, 0)
+
+    x = -x - 200
+    spacing = -spacing
+    group110 = new Spectrum(x, y, start + cubeSpacing * 0, spacing, green, 1)
+    group111 = new Spectrum(x, y, start + cubeSpacing * 1, spacing, turq, 1)
+    group112 = new Spectrum(x, y, start + cubeSpacing * 2, spacing, green, 1)
+    group113 = new Spectrum(x, y, start + cubeSpacing * 3, spacing, turq, 1)
+    group114 = new Spectrum(x, y, start + cubeSpacing * 4, spacing, green, 1)
+    group115 = new Spectrum(x, y, start + cubeSpacing * 5, spacing, turq, 1)
+    group116 = new Spectrum(x, y, start + cubeSpacing * 6, spacing, green, 1)
+    group117 = new Spectrum(x, y, start + cubeSpacing * 7, spacing, turq, 1)
+    group118 = new Spectrum(x, y, start + cubeSpacing * 8, spacing, green, 1)
+    group119 = new Spectrum(x, y, start + cubeSpacing * 9, spacing, turq, 1)
+    group1110 = new Spectrum(x, y, start + cubeSpacing * 10, spacing, green, 1)
+    group1111 = new Spectrum(x, y, start + cubeSpacing * 11, spacing, turq, 1)
+    group1112 = new Spectrum(x, y, start + cubeSpacing * 12, spacing, green, 1)
+    group1113 = new Spectrum(x, y, start + cubeSpacing * 13, spacing, turq, 1)
+    group1114 = new Spectrum(x, y, start + cubeSpacing * 14, spacing, green, 1)
+    group1115 = new Spectrum(x, y, start + cubeSpacing * 15, spacing, turq, 1)
+    group1116 = new Spectrum(x, y, start + cubeSpacing * 16, spacing, green, 1)
+    group1117 = new Spectrum(x, y, start + cubeSpacing * 17, spacing, turq, 1)
+    group1118 = new Spectrum(x, y, start + cubeSpacing * 18, spacing, green, 1)
+    group1119 = new Spectrum(x, y, start + cubeSpacing * 19, spacing, turq, 1)
+
+    renderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
+    scene.fog = new THREE.Fog( BACKGROUND_COLOR, 4000, 8500 )
+
   }
   hooks () {
   }
@@ -216,240 +235,167 @@ export default class Try5 extends Visualizer {
   }
 
   paint ({ ctx, height, width, now }) {
+    let volume = this.sync.volume * 10; let tatum = this.sync.tatum.progress * 10; let segment = this.sync.segment.progress * 10; let beat = this.sync.beat.progress * 10; let bar = this.sync.bar.progress * 10; let section = this.sync.section.progress * 10;
     renderer.render( scene, camera );
 
-    let speed = (this.sync.volume * 10) * (this.sync.volume * 10) * (this.sync.volume * 10)
-    speed = speed / 50
+    let speed = (this.sync.volume * 10) * (this.sync.volume * 10)
+    speed = speed / 20
+    speed += 40;
+    if(beat.progress > 0.9) {
+      speed += 2;
+    }
 
+    // console.log(speed)
 
     camera.position.z -= speed;
 
-    if(camera.position.z <= 0){
-      camera.position.z = 4000;
+    if(camera.position.z <= CAMERA_POSITION_10){
+      camera.position.z = CAMERA_START;
     }
 
     let camZ = camera.position.z;
-
-    let volume = this.sync.volume * 10;
-    let tatum = this.sync.tatum.progress * 10;
-    let segment = this.sync.segment.progress * 10;
-    let beat = this.sync.beat.progress * 10;
-    let bar = this.sync.bar.progress * 10;
-    let section = this.sync.section.progress * 10;
-
-    // console.log(this.sync.state.currentlyPlaying.name + this.sync.state.currentlyPlaying.artists[0].name)
-    // console.log(this.sync.section)
-
-    volumeObject.scale.set(volume ? volume : 0.00001 , volume ? volume : 0.00001 , volume ? volume : 0.00001 )
-    tatumObject.scale.set(tatum ? tatum : 0.00001, tatum ? tatum : 0.00001, tatum ? tatum : 0.00001)
-    segmentObject.scale.set(segment ? segment : 0.00001, segment ? segment : 0.00001, segment ? segment : 0.00001)
-    beatObject.scale.set(beat ? beat : 0.00001, beat ? beat : 0.00001, beat ? beat : 0.00001)
-    barObject.scale.set(bar ? bar : 0.00001, bar ? bar : 0.00001, bar ? bar : 0.00001)
-    sectionObject.scale.set(section ? section : 0.00001, section ? section : 0.00001, section ? section : 0.00001)
 
     let x_position = -900;
     let spacing = 300;
     let y_position = -300;
     let z_position = -1000 + camZ;
 
-    volumeObject.position.set(x_position, 0, z_position);
-    volumeText.position.set(x_position - 70, y_position, z_position);
-    x_position += spacing;
-
-    tatumObject.position.set(x_position, 0, z_position);
-    tatumText.position.set(x_position - 70, y_position, z_position);
-    x_position += spacing;
-
-    segmentObject.position.set(x_position, 0, z_position);
-    segmentText.position.set(x_position - 70, y_position, z_position);
-    x_position += spacing;
-
-    beatObject.position.set(x_position, 0, z_position);
-    beatText.position.set(x_position - 50, y_position, z_position);
-    x_position += spacing;
-
-    barObject.position.set(x_position, 0, z_position);
-    barText.position.set(x_position - 50, y_position, z_position);
-    x_position += spacing;
-
-    sectionObject.position.set(x_position, 0, z_position);
-    sectionText.position.set(x_position - 70, y_position, z_position);
-    x_position += spacing;
-
-
-    x_position = -700;
-    y_position = -400;
-    z_position = -3000 + camZ;
-
-    setInterval(() => {
-      COUNTER++
-      // createMountains(this.sync.segment.pitches, x_position, y_position - 200, z_position -100, COUNTER)
-    }, 2000)
+    scaleDummyObjects(scene, volume, tatum, segment, beat, bar, section)
+    moveDummyObjects(scene, x_position, y_position + 800, z_position, spacing)
 
     let pitches = this.sync.segment.pitches
 
-    let newX = 500
-    let newY = -300
-    let newZ = 200
+    let newX = -1800
+    let newY = -500
+
+//  let CAMERA_START = 5000;
+//  let CAMERA_STEP = 400;
+//  let cubeSpacing = 400
+//  let start = -4600
+    let cubeSpacing = 800
+    let start = -4000
+
+    CAMERA_POSITIONS
+
+    group0.travel()
+    group1.travel()
+    group2.travel()
+    group3.travel()
+    group4.travel()
+    group5.travel()
+    group6.travel()
+    group7.travel()
+    group8.travel()
+    group9.travel()
+    group10.travel()
+    group11.travel()
+    group12.travel()
+    group13.travel()
+    group14.travel()
+    group15.travel()
+    group16.travel()
+    group17.travel()
+    group18.travel()
+    group19.travel()
+    group110.travel()
+    group111.travel()
+    group112.travel()
+    group113.travel()
+    group114.travel()
+    group115.travel()
+    group116.travel()
+    group117.travel()
+    group118.travel()
+    group119.travel()
+    group1110.travel()
+    group1111.travel()
+    group1112.travel()
+    group1113.travel()
+    group1114.travel()
+    group1115.travel()
+    group1116.travel()
+    group1117.travel()
+    group1118.travel()
+    group1119.travel()
+
+  
+    // switch(this.sync.beat.index % 10){
+    //   case 0:
+    //     move0(pitches)
+    //   case 1:
+    //     move1(pitches)
+    //   case 2:
+    //     move2(pitches)
+    //   case 3:
+    //     move3(pitches)
+    //   case 4:
+    //     move4(pitches)
+    //   case 5:
+    //     move5(pitches)
+    //   case 6:
+    //     move6(pitches)
+    //   case 7:
+    //     move7(pitches)
+    //   case 8:
+    //     move8(pitches)
+    //   case 9:
+    //     move9(pitches)
+    // }
+
+    let will = 50
+
+    // console.log(this.sync.beat)
+    // if (beat.progress >= 0.9){console.log("BEAT")}
+
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[0]) <= will   ){ move0(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[9] ) <= will  ){ move1(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[8] ) <= will  ){ move2(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[7] ) <= will  ){ move3(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[6] ) <= will  ){ move4(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[5] ) <= will  ){ move5(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[4] ) <= will  ){ move6(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[3] ) <= will  ){ move7(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[2] ) <= will  ){ move8(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[1] ) <= will  ){ move9(pitches) }
 
 
-    // let near = -2500
-    // let far = 600
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[0]) <= will  ){ move0(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[9] ) <= will  ){ move1(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[8] ) <= will  ){ move2(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[7] ) <= will  ){ move3(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[6] ) <= will  ){ move4(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[5] ) <= will  ){ move5(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[4] ) <= will  ){ move6(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[3] ) <= will  ){ move7(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[2] ) <= will  ){ move8(pitches) }
+    // if( Math.abs(camera.position.z - CAMERA_POSITIONS[1] ) <= will  ){ move9(pitches) }
 
 
-    //     -1980
-    //     1000
-
-    let move = 1000
-
-    // cube0.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube1.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube2.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube3.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube4.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube5.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube6.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube7.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube8.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-    // newZ-= cubeSpacing
-    // cube9.position.set(newX, newY, camera.position.z > -500? newZ : newZ + move)
-
-    let cubeSpacing = 400
-    let start = 0
-    // CAMERA_STATE
-
-    let distribution = 4000
 
 
-    if (camera.position.z === 4000){
-      console.log("4000")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0)%distribution);
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1)%distribution);
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2)%distribution);
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3)%distribution);
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4)%distribution);
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5)%distribution);
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6)%distribution);
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7)%distribution);
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8)%distribution);
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9)%distribution);
-      } else if (Math.abs (camera.position.z - 3600) <= 20 ) {
-        console.log(" - 3600")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 3200) <= 20 ) {
-        console.log(" - 3200")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 2800) <= 20 ) {
-        console.log(" - 2800")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 2400) <= 20 ) {
-        console.log(" - 2400")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 2000) <= 20 ) {
-        console.log(" - 2000")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 1600) <= 20 ) {
-        console.log(" - 1600")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 1200) <= 20 ) {
-        console.log(" - 1200")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 800) <= 20 ) {
-        console.log(" - 800")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      } else if (Math.abs (camera.position.z - 400) <= 20 ) {
-        console.log(" - 400")
-        cube0.position.set(newX, newY, (start + cubeSpacing * 0 + cubeSpacing )%distribution );
-        cube1.position.set(newX, newY, (start + cubeSpacing * 1 + cubeSpacing )%distribution );
-        cube2.position.set(newX, newY, (start + cubeSpacing * 2 + cubeSpacing )%distribution );
-        cube3.position.set(newX, newY, (start + cubeSpacing * 3 + cubeSpacing )%distribution );
-        cube4.position.set(newX, newY, (start + cubeSpacing * 4 + cubeSpacing )%distribution );
-        cube5.position.set(newX, newY, (start + cubeSpacing * 5 + cubeSpacing )%distribution );
-        cube6.position.set(newX, newY, (start + cubeSpacing * 6 + cubeSpacing )%distribution );
-        cube7.position.set(newX, newY, (start + cubeSpacing * 7 + cubeSpacing )%distribution );
-        cube8.position.set(newX, newY, (start + cubeSpacing * 8 + cubeSpacing )%distribution );
-        cube9.position.set(newX, newY, (start + cubeSpacing * 9 + cubeSpacing )%distribution );
-      }
+
+    // cube0.position.set(newX, newY, (start + cubeSpacing * 0));
+    // cube1.position.set(newX, newY, (start + cubeSpacing * 1));
+    // cube2.position.set(newX, newY, (start + cubeSpacing * 2));
+    // cube3.position.set(newX, newY, (start + cubeSpacing * 3));
+    // cube4.position.set(newX, newY, (start + cubeSpacing * 4));
+    // cube5.position.set(newX, newY, (start + cubeSpacing * 5));
+    // cube6.position.set(newX, newY, (start + cubeSpacing * 6));
+    // cube7.position.set(newX, newY, (start + cubeSpacing * 7));
+    // cube8.position.set(newX, newY, (start + cubeSpacing * 8));
+    // cube9.position.set(newX, newY, (start + cubeSpacing * 9));
+    // cube10.position.set(newX, newY, (start + cubeSpacing * 10));
+    // cube11.position.set(newX, newY, (start + cubeSpacing * 11));
+    // cube12.position.set(newX, newY, (start + cubeSpacing * 12));
+    // cube13.position.set(newX, newY, (start + cubeSpacing * 13));
+    // cube14.position.set(newX, newY, (start + cubeSpacing * 14));
+    // cube15.position.set(newX, newY, (start + cubeSpacing * 15));
+    // cube16.position.set(newX, newY, (start + cubeSpacing * 16));
+    // cube17.position.set(newX, newY, (start + cubeSpacing * 17));
+    // cube18.position.set(newX, newY, (start + cubeSpacing * 18));
+    // cube19.position.set(newX, newY, (start + cubeSpacing * 19));
+
+    // console.log(group0)
 
   }
 }
