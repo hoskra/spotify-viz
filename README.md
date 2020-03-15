@@ -5,8 +5,17 @@
 
 * [Awesome Audio Visualization](https://github.com/willianjusten/awesome-audio-visualization)
 * [Notes on Music Information Retrieval](https://musicinformationretrieval.com)
-
+* [Listenable accoustic map](http://everynoise.com)
 ---
+
+## About Spotify Music Analysis
+
+* [Track Analysis (beats, bars ...)](https://spotify-audio-analysis.glitch.me/analysis.html)
+* [Track Features Filter](https://www.klangspektrum.digital/)
+* [Visualize Track Features](https://spotify-audio-features.glitch.me)
+* [Create Spotify Playlist using Analysis](http://smarterplaylists.playlistmachinery.com/)
+* [More Spotify Applications](https://developer.spotify.com/community/showcase/)
+
 
 ## Developer Documentation
 > Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
