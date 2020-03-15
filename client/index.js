@@ -11,6 +11,8 @@ import Visualizer from './classes/visualizer'
 let GUI_MODE = 1;
 let SONG_ID = "";
 
+let JUST_ONCE = true;
+
 let artist, name;
 let danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo;
 
@@ -78,12 +80,16 @@ paint ({ ctx, height, width, now }) {
 
     if (SONG_ID) {
       if (this.sync.state.currentlyPlaying.id != SONG_ID) {
-        location.reload();
+        // location.reload();
       }
     }
 
     SONG_ID = this.sync.state.currentlyPlaying.id;
 
+    if(JUST_ONCE) {
+      JUST_ONCE = false;
+      console.log(this.sync.state)
+    }
 
     danceability = this.sync.state.trackFeatures.danceability;
     energy = this.sync.state.trackFeatures.energy;
