@@ -5,6 +5,7 @@ import Try2 from './try2'
 import Try3 from './try3'
 import Try4 from './try4'
 import Try5 from './try5'
+import Try6 from './try6'
 
 import IndexData from './classes/indexData'
 import Visualizer from './classes/visualizer'
@@ -46,7 +47,7 @@ class Index extends Visualizer {
         }
      });
 
-      let app = new Try5();
+      let app = new Try6();
 
       $("#2").click(()=>{
         app = undefined

@@ -43,3 +43,31 @@ NODE_ENV=development
 npm i
 npm run serve
 ```
+## WebGL 
+
+> Links from book: Beginning WebGL for HTML5 pdf (https://www.docdroid.net/kg1s/beginning-webgl-for-html5-pdf#page=7)
+
+### Demos
+https://www.khronos.org/webgl/wiki/Demo_Repository
+http://madebyevan.com/webgl-water/
+http://ibiblio.org/e-notes/webgl/gpu/contents.htm
+
+### Learning WebGL
+http://learnwebgl.brown37.net
+
+### HTML
+https://www.w3.org/TR/html5-diff/
+
+### Javascript
+http://crockford.com/javascript/
+https://jquery.com
+https://www.json.org/json-en.html
+
+### Framework list
+https://www.khronos.org/webgl/wiki/User_Contributions
+
+### WebGL best practices
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices
+
+## WebGL Specifications
+https://www.khronos.org/registry/webgl/specs/latest/
