@@ -61,6 +61,10 @@ class Index extends Visualizer {
         app = undefined
         app = new Try5()
       })
+      $("#5").click(()=>{
+        app = undefined
+        app = new Try6()
+      })
 
   } else {
     auth()

@@ -88,3 +88,46 @@ export function makeGrids(scene, numberOfGrids, spaceBetween, rotation) {
 
     scene.add(gridObject);
 }
+
+export function moveGrid(scene, speed) {
+    let horizonalGrid = scene.getObjectByName( "horizonalGrid" );
+    horizonalGrid.children.forEach((e)=> {
+      e.position.z += speed;
+      if (e.position.z >= 100)
+        e.position.z = -100;
+    });
+  }
+
+export function separatedGrids(scene, grid_material) {
+    let y = 0;
+    let grid_size = 1000, grid_spacing = 50;
+
+    // VERTICAL GRID
+   let verticalGrid = new THREE.Group();
+   verticalGrid.name = "verticalGrid";
+
+   // larger at sides for wider screens
+   for (let i = - grid_size*3; i <= grid_size*3; i += grid_spacing){
+     let grid_geometry = new THREE.Geometry();
+     grid_geometry.vertices.push(new THREE.Vector3(i, y, -grid_size));
+     grid_geometry.vertices.push(new THREE.Vector3(i, y, grid_size));
+     let grid_line = new THREE.Line(grid_geometry, grid_material, THREE.LineSegments);
+     verticalGrid.add(grid_line)
+   }
+
+   scene.add(verticalGrid);
+
+   // HORIZONTAL GRID
+   let horizonalGrid = new THREE.Group();
+   horizonalGrid.name = "horizonalGrid";
+
+   for (let i = - grid_size; i <= grid_size; i += grid_spacing){
+     let grid_geometry = new THREE.Geometry();
+     grid_geometry.vertices.push(new THREE.Vector3(-grid_size, y, i));
+     grid_geometry.vertices.push(new THREE.Vector3(grid_size, y, i));
+     let grid_line = new THREE.Line(grid_geometry, grid_material, THREE.LineSegments);
+     horizonalGrid.add(grid_line)
+   }
+
+   scene.add(horizonalGrid);
+}
