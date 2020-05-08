@@ -9,7 +9,7 @@ function onWindowResize() {
     BASE_RENDERER.setSize( window.innerWidth, window.innerHeight );
 }
 
-export function init(camera, scene, renderer, GRID_COLOR){
+export function init(camera, scene, renderer, GRID_COLOR, LIGHTING){
     BASE_CAMERA = camera;
     BASE_RENDERER = renderer;
 
@@ -18,29 +18,8 @@ export function init(camera, scene, renderer, GRID_COLOR){
     camera.lookAt( 0, 0, 0 );
 
     // SCENE
-    scene.background = new THREE.Color().setHSL( 0.2, 0, 1 );
-    scene.fog = new THREE.Fog( scene.background, 1, 2000 );
-
-    // HEMISPHERE LIGHT
-    var hemiLight = new THREE.HemisphereLight( 0xcfcfcf, 0xcfccff, 0.6 );
-    hemiLight.color.setHSL( 0.8, 1, 0.2 );
-    hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-    hemiLight.position.set( 0, 50, 0 );
-    scene.add( hemiLight );
-
-    // var hemiLightHelper = new THREE.HemisphereLightHelper( hemiLight, 100 );
-    // scene.add( hemiLightHelper );
-
-    // DIRECTIONAL LIGHT
-    var dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
-    dirLight.color.setHSL( 0.1, 1, 0.95 );
-    dirLight.position.set( - 1, 1.75, 1 );
-    dirLight.position.multiplyScalar( 30 );
-    scene.add( dirLight );
-
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
+    scene.background = new THREE.Color(0x000000);
+    scene.fog = new THREE.Fog( scene.background, 1, 1700 );
 
     // GROUND
     var groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
@@ -52,6 +31,22 @@ export function init(camera, scene, renderer, GRID_COLOR){
     ground.rotation.x = - Math.PI / 2;
     ground.receiveShadow = true;
     scene.add( ground );
+
+    if (LIGHTING) {
+    // HEMISPHERE LIGHT
+    // var hemiLightHelper = new THREE.HemisphereLightHelper( hemiLight, 100 );
+    // scene.add( hemiLightHelper );
+
+    // DIRECTIONAL LIGHT
+    var dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+    dirLight.color.setHSL( 0.1, 1, 0.95 );
+    dirLight.position.set( - 1, 1.75, 1 );
+    dirLight.position.multiplyScalar( 30 );
+    scene.add( dirLight );
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 2048;
+    dirLight.shadow.mapSize.height = 2048;
+
 
     // SKYDOME
     var vertexShader = $('#vertexShader')[0].textContent;
@@ -76,6 +71,7 @@ export function init(camera, scene, renderer, GRID_COLOR){
 
     var sky = new THREE.Mesh( skyGeo, skyMat );
     scene.add( sky );
+    }
 
     // RENDERER
     renderer.setPixelRatio( window.devicePixelRatio );

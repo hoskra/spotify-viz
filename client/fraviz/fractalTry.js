@@ -35,20 +35,3 @@ export function triangle(scene) {
     // cubes.applyQuaternion( quaternion );
 }
 
-export function pitch(scene) {
-    // CUBES
-    let green = new THREE.MeshPhongMaterial( { color: 0x00ffff } )
-    let cubes = new THREE.Group();
-    cubes.name = "cubes";
-
-    let start = -100;
-    let spacing = 10;
-
-    for(let i=0; i <=11; i++){
-        let cube = new THREE.Mesh( new THREE.BoxGeometry( 10, 10, 10 ), green);
-        cube.position.set(start + i * (10 + spacing), 10, 0);
-        cubes.add(cube)
-    }
-    scene.add(cubes);
-    cubes.position.z = 150;
-}

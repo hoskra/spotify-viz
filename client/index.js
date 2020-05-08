@@ -1,16 +1,17 @@
 import { auth } from './classes/sync'
 import Example from './example'
-import Try1 from './try1'
-import Try2 from './try2'
-import Try3 from './try3'
-import Try4 from './try4'
-import Try5 from './try5'
-import Try6 from './try6'
+// import Try1 from './try1'
+// import Try2 from './try2'
+// import Try3 from './try3'
+// import Try4 from './try4'
+// import Try5 from './try5'
+// import Try6 from './try6'
+import Fraviz from './fraviz'
 
-import IndexData from './classes/indexData'
+// import IndexData from './classes/indexData'
 import Visualizer from './classes/visualizer'
 
-let GUI_MODE = 1;
+let GUI_MODE = 0;
 let SONG_ID = "";
 
 let JUST_ONCE = true;
@@ -26,45 +27,25 @@ class Index extends Visualizer {
     super({ volumeSmoothing: 100 })
 
     if (window.location.hash === '#start') {
-      if (GUI_MODE === 0) {$(".gui").removeClass("hiden");} else if (GUI_MODE === 1) {$(".gui").addClass("hiden");$("#song").removeClass("hiden");} else {$("#song").addClass("hiden");}
 
+      if (GUI_MODE === 0) {$(".gui").removeClass("hiden");}
+      else {$(".gui").addClass("hiden")}
+
+      $("#song").removeClass("hiden")
       $('body').keyup(function(e){
         // user has pressed space
         if(e.keyCode == 32){
-          GUI_MODE++
-          GUI_MODE = GUI_MODE % 3
           if (GUI_MODE === 0) {
-              // all visible
-              $(".gui").removeClass("hiden");
-            } else if (GUI_MODE === 1) {
-              // just song name and artist visible
-              $(".gui").addClass("hiden");
-              $("#song").removeClass("hiden");
-            } else {
-              // all hidden
-              $("#song").addClass("hiden");
+            $(".gui").addClass("hiden");
+            GUI_MODE = 1
+          } else {
+            $(".gui").removeClass("hiden");
+              GUI_MODE = 0
             }
         }
      });
 
-      let app = new Try5();
-
-      $("#2").click(()=>{
-        app = undefined
-        app = new Try2()
-      })
-      $("#3").click(()=>{
-        app = undefined
-        app = new Try3()
-      })
-      $("#4").click(()=>{
-        app = undefined
-        app = new Try5()
-      })
-      $("#5").click(()=>{
-        app = undefined
-        app = new Try6()
-      })
+      let app = new Fraviz();
 
   } else {
     auth()
@@ -93,7 +74,6 @@ paint ({ ctx, height, width, now }) {
 
     if(JUST_ONCE) {
       JUST_ONCE = false;
-      // console.log(this.sync.state)
     }
 
     danceability = this.sync.state.trackFeatures.danceability;
