@@ -29,8 +29,6 @@ export function triangle(scene) {
 
     triangle.name = "triangle";
 
-
-
     // var quaternion = new THREE.Quaternion();
     // quaternion.setFromAxisAngle(
     //   new THREE.Vector3( 0, 0, 1 ), Math.PI/3 );

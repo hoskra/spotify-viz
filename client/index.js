@@ -47,7 +47,7 @@ class Index extends Visualizer {
         }
      });
 
-      let app = new Try6();
+      let app = new Try5();
 
       $("#2").click(()=>{
         app = undefined
