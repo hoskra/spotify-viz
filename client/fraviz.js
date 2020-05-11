@@ -63,7 +63,6 @@ let toRotate = []
 let allTrees = new THREE.Group();
 let beatTrees = new THREE.Group();
 let spacing = 200
-let beatSpacing = 200
 
 let middle;
 let middleMaterial = new THREE.MeshBasicMaterial( { color: 0x000000  } );
@@ -96,15 +95,21 @@ function treePerBar(){
   scene.add(allTrees)
 }
 
-function treePerBeat(){
+function treePerBeat(ratio){
 
   let start = 200
+  let beatSpacing = spacing / 1
+
+
+  // console.log(ratio)
+  // console.log(beatSpacing)
+
   for (let i = 0; i < BEATS.length; i++)
   {
     // rotateTree
     // t.toRotate.name = "bars_" + i;
     // console.log(BARS[i])
-    let t = new Tree(-30, 20, start - i * spacing, (30 + i*i) % 60, false); t.makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene);
+    let t = new Tree(-30, 20, start - i * beatSpacing, (30 + i*i) % 60, false); t.makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene);
     t.scale(7)
     t.toRotate.name = "beats_" + i;
 
@@ -332,9 +337,14 @@ export default class Fraviz extends Visualizer {
 
     if (attributesSet){
 
+      let beat = this.sync.beat.duration/this.sync.beat.elapsed
+      let bar = this.sync.bar.duration/this.sync.bar.elapsed
 
-      beatTrees.position.z +=  this.sync.beat.duration/this.sync.beat.elapsed      ;
-      allTrees.position.z +=  this.sync.bar.duration/this.sync.bar.elapsed      ;
+      beat > 5 && (beat = 7);
+      bar > 5 && (bar   = 7);
+
+      beatTrees.position.z +=  beat;
+      allTrees.position.z +=  bar;
 
     }
 
@@ -360,7 +370,7 @@ export default class Fraviz extends Visualizer {
       // speed = this.sync.state.trackAnalysis.track.duration / BARS.length
       attributesSet = true;
       treePerBar();
-      treePerBeat();
+      treePerBeat(  BEATS.length / BARS.length );
 
       let hue =  d3Color.hcl( d3.interpolateHsl("#C6FFDD", "#FBD786", "#f7797d")(0) ) .h
       PITCH_MATERIAL.color.setHSL( hue, 1, 0.8 );
