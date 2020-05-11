@@ -3,7 +3,7 @@ import * as THREE from 'three'
 import { init } from './fraviz/init';
 import Stats from './libs/stats.module'
 import { moveGrid, separatedGrids } from './fraviz/grid';
-import { triangle, pitch } from './fraviz/fractalTry';
+// import { triangle, pitch } from './fraviz/fractalTry';
 
 var camera, renderer, scene, stats;
 var clock, clock2;

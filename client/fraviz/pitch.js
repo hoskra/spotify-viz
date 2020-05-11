@@ -5,8 +5,8 @@ export function pitch(scene, name, x, y, z, material) {
     let cubes = new THREE.Group();
     cubes.name = name;
 
-    let start = -100;
-    let spacing = 10;
+    let start = -50;
+    let spacing = 5;
 
     for(let i=0; i <=11; i++){
         let cube = new THREE.Mesh( new THREE.BoxGeometry( 10, 10, 10 ), material);

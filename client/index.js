@@ -1,11 +1,11 @@
 import { auth } from './classes/sync'
 import Example from './example'
-// import Try1 from './try1'
-// import Try2 from './try2'
-// import Try3 from './try3'
-// import Try4 from './try4'
-// import Try5 from './try5'
-// import Try6 from './try6'
+import Try1 from './try1'
+import Try2 from './try2'
+import Try3 from './try3'
+import Try4 from './try4'
+import Try5 from './try5'
+import Try6 from './try6'
 import Fraviz from './fraviz'
 
 // import IndexData from './classes/indexData'
@@ -45,6 +45,7 @@ class Index extends Visualizer {
         }
      });
 
+      // let app = new Try5();
       let app = new Fraviz();
 
   } else {
@@ -75,6 +76,7 @@ paint ({ ctx, height, width, now }) {
     if(JUST_ONCE) {
       JUST_ONCE = false;
     }
+
 
     danceability = this.sync.state.trackFeatures.danceability;
     energy = this.sync.state.trackFeatures.energy;
