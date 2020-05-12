@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-export function rotateTree(toRotate, speed) {
+export function rotateTree(toRotate, signum, speed = 1) {
     toRotate.forEach   (obj => obj.forEach((element, i) => {element.rotation.z += signum * (0.005 * speed )} ));
 }
 

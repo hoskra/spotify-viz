@@ -26,6 +26,7 @@ let light2;
 
 let PITCH_MODE = 0;
 let LIGHTNING = false
+let DANCING = true;
 
 let attributesSet = false;
 
@@ -60,6 +61,7 @@ let cubes1;
 let cubes2;
 
 let toRotate = []
+let toRotateBeats = []
 let allTrees = new THREE.Group();
 let beatTrees = new THREE.Group();
 let spacing = 200
@@ -89,6 +91,8 @@ function treePerBar(){
     t.scale(7)
     t.toRotate.name = "bars_" + i;
 
+    toRotate.push(t)
+
     allTrees.add(t.main);
   }
 
@@ -114,6 +118,8 @@ function treePerBeat(ratio){
     t.toRotate.name = "beats_" + i;
 
     beatTrees.add(t.main);
+    toRotateBeats.push(t)
+
   }
 
   scene.add(beatTrees)
@@ -346,6 +352,27 @@ export default class Fraviz extends Visualizer {
       beatTrees.position.z +=  beat;
       allTrees.position.z +=  bar;
 
+      // rotateTree(allTrees[0])
+
+      if(DANCING){
+        if (this.sync.beat.index % 2 == 0){
+
+          toRotate.forEach(element => {
+            rotateTree(element.toRotate,-1 , 2)
+          });
+          toRotateBeats.forEach(element => {
+            rotateTree(element.toRotate,1 , 2)
+          });
+        } else {
+            toRotate.forEach(element => {
+              rotateTree(element.toRotate, 1,2  )
+            });
+            toRotateBeats.forEach(element => {
+              rotateTree(element.toRotate, -1 ,2 )
+            });
+        }
+      }
+
     }
 
 
@@ -395,7 +422,6 @@ export default class Fraviz extends Visualizer {
     } else {
       moveGrid(scene, 0.1);
     }
-
 
 
 
