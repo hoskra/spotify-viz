@@ -152,12 +152,26 @@ export default class Try1 extends Visualizer {
 
     let camZ = camera.position.z;
 
+    // assign values
     let volume = this.sync.volume * 10;
-    let tatum = this.sync.tatum.confidence * 10;
-    let segment = this.sync.segment.confidence * 10;
-    let beat = this.sync.beat.confidence * 10;
-    let bar = this.sync.bar.confidence * 10;
-    let section = this.sync.section.tempo * 0.1;
+    let tatum = this.sync.tatum.duration/this.sync.tatum.elapsed
+    let segment = this.sync.section.duration/this.sync.section.elapsed
+    let beat = this.sync.beat.duration/this.sync.beat.elapsed
+    let bar = this.sync.bar.duration/this.sync.bar.elapsed
+    let section = this.sync.section.duration/this.sync.section.elapsed
+
+    bar /= 5;
+
+    // limit values
+    let limit = 10;
+    tatum > limit && (tatum = limit);
+    segment > limit && (segment   = limit);
+    bar > limit && (bar   = limit);
+    beat > limit && (beat   = limit);
+    section > limit && (section   = limit);
+
+    // volume > 10 && volume = 
+
 
     volumeObject.scale.set(volume ? volume : 0.00001 , volume ? volume : 0.00001 , volume ? volume : 0.00001 )
     tatumObject.scale.set(tatum ? tatum : 0.00001, tatum ? tatum : 0.00001, tatum ? tatum : 0.00001)

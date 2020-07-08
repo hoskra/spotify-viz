@@ -3,10 +3,14 @@ import { interpolateRgb, interpolateBasis } from 'd3-interpolate'
 import { getRandomElement } from './util/array'
 import { sin, circle } from './util/canvas'
 
-function drawTree(ctx, startX, startY, len, angle, branchWidth, color1, color2){
+function drawTree(ctx, startX, startY, len, angle, branchWidth, color1, color2, anim1){
+  branchWidth = anim1;
   ctx.beginPath();
   ctx.save();
   ctx.translate(startX, startY);
+  ctx.strokeStyle = color1;
+  ctx.fillStyle = color2;
+  ctx.lineWidth = branchWidth;
   ctx.rotate(angle * Math.PI/180);
   ctx.moveTo(0,0);
   ctx.lineTo(0, -len);
@@ -16,41 +20,12 @@ function drawTree(ctx, startX, startY, len, angle, branchWidth, color1, color2){
     ctx.restore();
     return;
   }
-
-  drawTree(ctx, -len, len * 0.55, angle + 7, branchWidth);
-  drawTree(ctx, -len, len * 0.55, angle - 7, branchWidth);
+  // console.log(anim1)
+  drawTree(ctx, 0, -len, len * 0.55, angle  + 7, branchWidth);
+  drawTree(ctx, 0, -len, len * 0.55, angle - 30, branchWidth);
 
   ctx.restore();
 }
-
-export function createStar (points, innerRadius, outerRadius, cx = 0, cy = 0, rotation = 0) {
-  const outer = polygon(points, outerRadius, cx, cy, rotation)
-  const inner = polygon(points, innerRadius, cx, cy, (360 / points / 2) + rotation)
-  const vertices = []
-  
-  for (var i = 0; i < points; i++) {
-    vertices.push({ x: outer[i].x, y: outer[i].y })
-    vertices.push({ x: inner[i].x, y: inner[i].y })
-  }
-
-  return { outer, inner, vertices }
-}
-
-
-function drawShape (ctx, vertices) {
-  vertices.forEach(({ x, y }, i) => {
-    if (i === 0) {
-      ctx.beginPath()
-      ctx.moveTo(x, y)
-    } else {
-      ctx.lineTo(x, y)
-    }
-  })
-
-  ctx.closePath()
-  return ctx
-}
-
 
 export default class Fraviz2D extends Visualizer {
   constructor () {
@@ -77,6 +52,9 @@ export default class Fraviz2D extends Visualizer {
       // console.log(section)
     })
     this.sync.on('bar', beat => {
+
+
+
       this.lastColor = this.nextColor || getRandomElement(this.theme)
       this.nextColor = getRandomElement(this.theme.filter(color => color !== this.nextColor))
     })
@@ -86,7 +64,6 @@ export default class Fraviz2D extends Visualizer {
   paint ({ ctx, height, width, now }) {
     // const bar = interpolateBasis([0, this.sync.volume * 10, 0])(this.sync.bar.progress)
     // const beat = interpolateBasis([0, this.sync.volume * 300, 0])(this.sync.beat.progress)
-    // ctx.fillStyle = 'rgba(0, 0, 0, .08)'
     // ctx.fillRect(0, 0, width, height)
     // ctx.lineWidth = bar
     // ctx.strokeStyle = interpolateRgb(this.lastColor, this.nextColor)(this.sync.bar.progress)
@@ -96,14 +73,18 @@ export default class Fraviz2D extends Visualizer {
     // ctx.beginPath()
     // ctx.lineWidth = beat
     // circle(ctx, width / 2, height / 2, this.sync.volume * height / 5 + beat / 10)
-    
-    
     // ctx.stroke()
 
-    drawTree(ctx, width/2, height-80, 120, 0, 2, 'white', 'blue');
+    let beat = this.sync.beat.duration/this.sync.beat.elapsed
+    bea
+
+    let bar = this.sync.bar.duration/this.sync.bar.elapsed
+
+    ctx.fillStyle = 'white'
+    ctx.fillRect(0, 0, width, height)
+    drawTree(ctx, width/2, height-80, 120, 0, 2,  'blue', 'blue', beat);
 
 
 
-    // ctx.fill()
   }
 }

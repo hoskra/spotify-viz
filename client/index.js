@@ -23,6 +23,18 @@ let danceability, energy, key, loudness, mode, speechiness, acousticness, instru
 // $(".gui").addClass("hiden");
 // let app = new Try5()
 
+
+function showHideGUI(){
+  console.log("clicked")
+  if (GUI_MODE === 0) {
+    $(".gui").addClass("hiden");
+    GUI_MODE = 1
+  } else {
+    $(".gui").removeClass("hiden");
+      GUI_MODE = 0
+  }
+}
+
 class Index extends Visualizer {
   constructor () {
     super({ volumeSmoothing: 100 })
@@ -33,21 +45,15 @@ class Index extends Visualizer {
       else {$(".gui").addClass("hiden")}
 
       $("#song").removeClass("hiden")
-      $('body').keyup(function(e){
-        // user has pressed space
-        if(e.keyCode == 32){
-          if (GUI_MODE === 0) {
-            $(".gui").addClass("hiden");
-            GUI_MODE = 1
-          } else {
-            $(".gui").removeClass("hiden");
-              GUI_MODE = 0
-            }
-        }
-     });
+      $('body').keyup((e) => { if(e.keyCode == 32) showHideGUI()});
 
-      // let app = new Try5();
-      let app = new Fraviz();
+
+      // let app = new Try1();
+      // let app = new Try2();
+      // let app = new Try3();
+      // let app = new Try4();
+      let app = new Try5();
+      // let app = new Fraviz();
       // let app = new Fraviz2D();
 
   } else {
