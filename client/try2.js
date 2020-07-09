@@ -1,6 +1,7 @@
 import Visualizer from './classes/visualizer'
 import * as THREE from 'three'
 import * as d3 from 'd3-interpolate'
+import Stats from './libs/stats.module'
 
 import { makeGrids } from './fraviz/grid'
 
@@ -12,7 +13,7 @@ let BACKGROUND_COLOR = 0x000000;
 let ROTATING_CAMERA = false;
 
 // VARIABLES
-var scene, camera, renderer;
+var scene, camera, renderer, stats;
 let group2 = new THREE.Group();
 let group3 = new THREE.Group();
 let group4 = new THREE.Group();
@@ -108,6 +109,9 @@ export default class Try2 extends Visualizer {
     for (let element of canvas) {
       element.parentNode.removeChild(element);
     }
+    // STATS
+    stats = new Stats();
+    $("body")[0].appendChild( stats.dom );
 
      // CAMERA
      camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight , 1, 10000 );
@@ -204,11 +208,14 @@ export default class Try2 extends Visualizer {
     let vol = this.sync.volume ? this.sync.volume : 0.5
     let speedTatum =  d3.interpolateNumber(vol, tatumID)
     let speedTatumInterpolated = speedTatum(0.5)
-
+    stats.update();
     let speed = (this.sync.volume * 10) * (this.sync.volume * 10) * (this.sync.volume * 10)
     speed = speed / 50
 
     camera.position.z -= speed
+    if (speed > 80)
+      speed = 80;
+
 
     if(ROTATING_CAMERA){
       if(camera.position.z > 20){

@@ -44,15 +44,52 @@ class Index extends Visualizer {
       if (GUI_MODE === 0) {$(".gui").removeClass("hiden");}
       else {$(".gui").addClass("hiden")}
 
-      $("#song").removeClass("hiden")
-      $('body').keyup((e) => { if(e.keyCode == 32) showHideGUI()});
+      let app = new Fraviz();
 
+      $("#song").removeClass("hiden")
+      $('body').keyup((e) => {
+        if(e.keyCode == 32){
+          showHideGUI()
+        } else if (e.keyCode == 97) {
+          app = undefined
+          app = new Try4()  // basic stats
+        } else if (e.keyCode == 98) {
+          app = undefined
+          app = new Try2()  // wierd dancing trees
+        } else if (e.keyCode == 99) {
+          app = undefined
+          app = new Try5()
+        } else if (e.keyCode == 100) {
+          app = undefined
+          app = new Fraviz()
+          location.reload();
+        }
+      });
+
+
+      $("#1").click(()=>{
+        app = undefined
+        app = new Try4()  // basic stats
+      })
+      $("#2").click(()=>{
+        app = undefined
+        app = new Try2()  // wierd dancing trees
+      })
+      $("#3").click(()=>{
+        app = undefined
+        app = new Try5()
+      })
+      $("#4").click(()=>{
+        app = undefined
+        app = new Fraviz()
+        location.reload();
+      })
 
       // let app = new Try1();
       // let app = new Try2();
       // let app = new Try3();
       // let app = new Try4();
-      let app = new Try5();
+      // let app = new Try5();
       // let app = new Fraviz();
       // let app = new Fraviz2D();
 

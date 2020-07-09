@@ -1,9 +1,10 @@
 import Visualizer from './classes/visualizer'
 import * as THREE from 'three'
+import Stats from './libs/stats.module'
 
 import { makeGrids } from './fraviz/grid'
 
-var scene, camera, renderer;
+var scene, camera, renderer, stats;
 
 // DEFAULT VALUES
 let BACKGROUND_COLOR = 0x000000;
@@ -100,7 +101,9 @@ export default class Try4 extends Visualizer {
     for (let element of canvas) {
       element.parentNode.removeChild(element);
     }
-
+    // STATS
+    stats = new Stats();
+    $("body")[0].appendChild( stats.dom );
      // CAMERA
      camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight , 1, 10000 );
      camera.position.set( -100, 100, 1000 );
@@ -144,11 +147,14 @@ export default class Try4 extends Visualizer {
 
   paint ({ ctx, height, width, now }) {
     renderer.render( scene, camera );
+    stats.update();
 
     let speed = (this.sync.volume * 10) * (this.sync.volume * 10) * (this.sync.volume * 10)
     speed = speed / 50
 
     camera.position.z -= speed;
+    (speed > 30) && (speed = 30);
+
 
     if(camera.position.z < -1000){
       camera.position.z = 1000;
@@ -157,12 +163,20 @@ export default class Try4 extends Visualizer {
     let camZ = camera.position.z;
 
     let volume = this.sync.volume * 10;
-    let tatum = this.sync.tatum.progress * 10;
-    let segment = this.sync.segment.progress * 10;
-    let beat = this.sync.beat.progress * 10;
-    let bar = this.sync.bar.progress * 10;
-    let section = this.sync.section.progress * 10;
+    let tatum = this.sync.tatum.duration/this.sync.tatum.elapsed
+    let segment = this.sync.section.duration/this.sync.section.elapsed
+    let beat = this.sync.beat.duration/this.sync.beat.elapsed
+    let bar = this.sync.bar.duration/this.sync.bar.elapsed
+    let section = this.sync.section.duration/this.sync.section.elapsed
 
+    let limit = 10;
+    tatum > limit && (tatum = limit);
+    segment > limit && (segment   = limit);
+    bar > limit && (bar   = limit);
+    beat > limit && (beat   = limit);
+    section > limit && (section   = limit);
+
+    
     // console.log(this.sync.state.currentlyPlaying.name + this.sync.state.currentlyPlaying.artists[0].name)
     // console.log(this.sync.section)
 

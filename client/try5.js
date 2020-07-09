@@ -1,11 +1,12 @@
 import Visualizer from './classes/visualizer'
 import * as THREE from 'three'
+import Stats from './libs/stats.module'
 
 import { makeGrids } from './fraviz/grid'
 import { setupScene } from './fraviz/base'
 import { createDummyObjects, moveDummyObjects, scaleDummyObjects } from './fraviz/dummyObjects'
 
-var scene, camera, renderer;
+var scene, camera, renderer, stats;
 
 // DEFAULT VALUES
 let BACKGROUND_COLOR = 0x000000;
@@ -140,7 +141,7 @@ class Spectrum{
       cube.position.y-= 40
 
       if (cube.material.opacity >= 0)  {
-        cube.material.opacity -= 0.0001
+        cube.material.opacity -= 0.00005
       }
 
     });
@@ -167,7 +168,8 @@ export default class Try5 extends Visualizer {
     makeGrids(scene, 2, 4700, 1);
     createDummyObjects(scene);
     camera.position.z = CAMERA_POSITIONS[0];
-
+    stats = new Stats();
+    $("body")[0].appendChild( stats.dom );
 
     let green = new THREE.MeshPhongMaterial( { color: 0x03fc0f, opacity: 0, transparent: true, side: THREE.DoubleSide } )
     let turq = new THREE.MeshPhongMaterial( { color: 0x03fcf0, opacity: 0, transparent: true, side: THREE.DoubleSide } )
@@ -235,19 +237,37 @@ export default class Try5 extends Visualizer {
   }
 
   paint ({ ctx, height, width, now }) {
-    let volume = this.sync.volume * 10; let tatum = this.sync.tatum.progress * 10; let segment = this.sync.segment.progress * 10; let beat = this.sync.beat.progress * 10; let bar = this.sync.bar.progress * 10; let section = this.sync.section.progress * 10;
+    // let volume = this.sync.volume * 10; let tatum = this.sync.tatum.progress * 10; let segment = this.sync.segment.progress * 10; let beat = this.sync.beat.progress * 10; let bar = this.sync.bar.progress * 10; let section = this.sync.section.progress * 10;
+    let volume = this.sync.volume * 10;
+    let tatum = this.sync.tatum.duration/this.sync.tatum.elapsed
+    let segment = this.sync.section.duration/this.sync.section.elapsed
+    let beat = this.sync.beat.duration/this.sync.beat.elapsed
+    let bar = this.sync.bar.duration/this.sync.bar.elapsed
+    let section = this.sync.section.duration/this.sync.section.elapsed
+
+    bar /= 5;
+
+    // limit values
+    let limit = 10;
+    tatum > limit && (tatum = limit);
+    segment > limit && (segment   = limit);
+    bar > limit && (bar   = limit);
+    beat > limit && (beat   = limit);
+    section > limit && (section   = limit);
+
     renderer.render( scene, camera );
 
-    let speed = (this.sync.volume * 10) * (this.sync.volume * 10)
-    speed = speed / 20
-    speed += 40;
-    if(beat.progress > 0.9) {
-      speed += 2;
-    }
+    let speed = (this.sync.volume * 5)
+
+    if(beat.progress > 0.9) speed += 2;
+    if(volume > 15) volume = 15
+    if (speed > 7) speed = 0;
 
     // console.log(speed)
 
-    camera.position.z -= speed;
+    stats.update();
+    camera.position.z -= 45 + speed;
+    //  speed;
 
     if(camera.position.z <= CAMERA_POSITION_10){
       camera.position.z = CAMERA_START;
@@ -318,7 +338,7 @@ export default class Try5 extends Visualizer {
     group1118.travel()
     group1119.travel()
 
-  
+
     // switch(this.sync.beat.index % 10){
     //   case 0:
     //     move0(pitches)
@@ -347,7 +367,7 @@ export default class Try5 extends Visualizer {
     // console.log(this.sync.beat)
     // if (beat.progress >= 0.9){console.log("BEAT")}
 
-    if( Math.abs(camera.position.z - CAMERA_POSITIONS[0]) <= will   ){ move0(pitches) }
+    if( Math.abs(camera.position.z - CAMERA_POSITIONS[0] ) <= will  ){ move0(pitches) }
     if( Math.abs(camera.position.z - CAMERA_POSITIONS[9] ) <= will  ){ move1(pitches) }
     if( Math.abs(camera.position.z - CAMERA_POSITIONS[8] ) <= will  ){ move2(pitches) }
     if( Math.abs(camera.position.z - CAMERA_POSITIONS[7] ) <= will  ){ move3(pitches) }

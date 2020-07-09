@@ -1,9 +1,10 @@
 import Visualizer from './classes/visualizer'
 import * as THREE from 'three'
+import Stats from './libs/stats.module'
 
 import { makeGrids } from './fraviz/grid'
 
-var scene, camera, renderer;
+var scene, camera, renderer, stats;
 
 // DEFAULT VALUES
 let BACKGROUND_COLOR = 0x000000;
@@ -100,7 +101,9 @@ export default class Try1 extends Visualizer {
     for (let element of canvas) {
       element.parentNode.removeChild(element);
     }
-
+    // STATS
+    stats = new Stats();
+    $("body")[0].appendChild( stats.dom );
      // CAMERA
      camera = new THREE.PerspectiveCamera( 90, window.innerWidth / window.innerHeight , 1, 10000 );
      camera.position.set( -100, 100, 1000 );
@@ -140,7 +143,7 @@ export default class Try1 extends Visualizer {
 
   paint ({ ctx, height, width, now }) {
     renderer.render( scene, camera );
-
+    stats.update();
     let speed = (this.sync.volume * 10) * (this.sync.volume * 10) * (this.sync.volume * 10)
     speed = speed / 50
 

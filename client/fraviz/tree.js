@@ -24,7 +24,7 @@ export class Tree {
         this.main.scale.z = (factor,factor,factor)
     }
 
-    makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene) {
+    makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene, rotate = false) {
         let l1 = new Leaf(0, 0, 0, 1,   this.degree, leafGeometry, leafMaterial, invisibleMaterial);
         let l2 = new Leaf(0, 0, 0, -1,  this.degree, leafGeometry, leafMaterial, invisibleMaterial);
         let l3 = new Leaf(0, 0, 0, 1,   this.degree, leafGeometry, leafMaterial, invisibleMaterial);
@@ -44,6 +44,10 @@ export class Tree {
         let branch5 = new Branch(this.x, this.y, this.z, branch4, _branch4, this.degree, branchGeometry, branchMaterial, scene);
 
         this.main = branch5.group
+
+        if(rotate){
+            this.main.rotation.y = 180
+        }
 
         if( this.individualLeavesSpeed ){
             this.leaves.push( l1.toRotate )
@@ -137,7 +141,9 @@ class Branch {
         let pos = 1.2
         objStatic.position.set(0, pos, 0);
         objStatic.add( pivotPoint );
-        objBranch.scale.y = 1
+        objBranch.scale.x = 0.7
+        objBranch.scale.y = 0.7
+        objBranch.scale.z = 1
         objBranch.position.set(0, 0, 0)
 
         this.group.add(this.right.group)

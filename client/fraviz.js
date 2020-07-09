@@ -68,7 +68,7 @@ function treePerBar() {
   for (let i = 0; i < TREE_COUNT; i++) {
     let t = new Tree(30, 20, start - i * spacing, (30 + i*i) % 60, false);
     t.makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene);
-    t.scale(7)
+    t.scale(10)
 
     toRotate.push(t)
     allTrees.add(t.main);
@@ -83,8 +83,8 @@ function treePerBeat() {
 
   for (let i = 0; i < TREE_COUNT; i++) {
     let t = new Tree(-30, 20, start - i * beatSpacing, (30 + i*i) % 60, false);
-    t.makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene);
-    t.scale(7)
+    t.makeTree(branchGeometry, leafGeometry, invisibleMaterial, branchMaterial, leafMaterial, scene, true);
+    t.scale(10)
 
     beatTrees.add(t.main);
     toRotateBeats.push(t)
@@ -234,21 +234,22 @@ export default class Fraviz extends Visualizer {
         allTrees.position.z = 0;
       }
 
+      let speed = 0.5
 
       if(DANCING){
-        if (this.sync.beat.index % 2 == 0){
+        if (this.sync.bar.index % 2 == 0){
           toRotate.forEach(element => {
-            rotateTree(element.toRotate,-1 , 2)
+            rotateTree(element.toRotate, -1 , speed)
           });
           toRotateBeats.forEach(element => {
-            rotateTree(element.toRotate,1 , 2)
+            rotateTree(element.toRotate, -1 , speed)
           });
         } else {
             toRotate.forEach(element => {
-              rotateTree(element.toRotate, 1,2  )
+              rotateTree(element.toRotate, 1, speed)
             });
             toRotateBeats.forEach(element => {
-              rotateTree(element.toRotate, -1 ,2 )
+              rotateTree(element.toRotate, 1 ,speed)
             });
         }
       }
@@ -275,6 +276,8 @@ export default class Fraviz extends Visualizer {
 
     if (volume) {
       let speed = volume * volume * volume;
+      if (speed > 8)
+        speed = 8
       moveGrid(scene, 0.1 + (speed) );
       middle.scale.set(volume, 1,1);
     } else {
@@ -291,8 +294,8 @@ export default class Fraviz extends Visualizer {
     light2.position.z = Math.cos( (time + 1) * 0.3 ) * 30 - 50;
 
     let t = this.sync.beat.index % 10;
-    let treeHue =  d3Color.hcl( d3.interpolateHsl("#1a2a6c", "#b21f1f", "#f7797d")( t / 10  ) ) .h
-    let anotherHue =  d3Color.hcl( d3.interpolateHsl("#1a2a6c", "#b21f1f", "#f7797d")( (t*t) / 10  ) ) .h
+    let treeHue =  d3Color.hcl( d3.interpolateHsl("#1a2a6c", "#b21f1f", "#f7797d")    ( t  ) ) .h
+    let anotherHue =  d3Color.hcl( d3.interpolateHsl("#1a2a6c", "#b21f1f", "#f7797d") ( 10-t   ) ) .h
 
     branchMaterial.color.setHSL( treeHue , 1, 0.6)
     leafMaterial.color.setHSL( anotherHue , 1, 0.8)
