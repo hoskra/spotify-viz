@@ -15,16 +15,23 @@
 ## Audio Analysis Details
 
 ### Rhythm
+
+[Rythm documentation link](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/#rhythm)
+
 Beats are subdivisions of bars. Tatums are subdivisions of beats. That is, bars always align with a beat and ditto tatums. Note that a low confidence does not necessarily mean the value is inaccurate. Exceptionally, a confidence of -1 indicates “no” value: the corresponding element must be discarded. A track may result with no bars, no beats, and/or no tatums if no periodicity was detected. The time signature ranges from 3 to 7 indicating time signatures of 3/4, to 7/4. A value of -1 may indicate no time signature, while a value of 1 indicates a rather complex or changing time signature. Rhythm subdivisions can be visualized in the following form:
 
 ![alt text](Rhythm.png "Rhythm")
 
 ### Pitch
+[Pitch documentation link](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/#pitch)
+
 Pitch content is given by a “chroma” vector, corresponding to the 12 pitch classes C, C#, D to B, with values ranging from 0 to 1 that describe the relative dominance of every pitch in the chromatic scale. For example a C Major chord would likely be represented by large values of C, E and G (i.e. classes 0, 4, and 7). Vectors are normalized to 1 by their strongest dimension, therefore noisy sounds are likely represented by values that are all close to 1, while pure tones are described by one value at 1 (the pitch) and others near 0. As can be seen below, the 12 vector indices are a combination of low-power spectrum values at their respective pitch frequencies
 
 ![alt text](Pitch_vector.png "Pitch_vector")
 
 ### Timbre
+[Timbre documentation link](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis/#timbre)
+
 Timbre is the quality of a musical note or sound that distinguishes different types of musical instruments, or voices. It is a complex notion also referred to as sound color, texture, or tone quality, and is derived from the shape of a segment’s spectro-temporal surface, independently of pitch and loudness. The timbre feature is a vector that includes 12 unbounded values roughly centered around 0. Those values are high level abstractions of the spectral surface, ordered by degree of importance. For completeness however, the first dimension represents the average loudness of the segment; second emphasizes brightness; third is more closely correlated to the flatness of a sound; fourth to sounds with a stronger attack; etc. See an image below representing the 12 basis functions (i.e. template segments).
 
 ![alt text](Timbre_basis_functions.png "Timbre_basis_functions")
