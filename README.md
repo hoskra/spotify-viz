@@ -1,6 +1,12 @@
 # Fraviz
 > Online version of [Fraviz](http://fraviz.herokuapp.com) available on heroku.
 
+## Important Spotify API endpoinds
+
+* [Get Audio Analysis for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis)
+* [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
+* [Get a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/)
+
 ## About Music Visualization
 
 * [Awesome Audio Visualization](https://github.com/willianjusten/awesome-audio-visualization)
@@ -8,7 +14,7 @@
 * [Listenable accoustic map](http://everynoise.com)
 ---
 
-## About Spotify Music Analysis
+## Applications made using Spotify music analysis
 
 * [Track Analysis (beats, bars ...)](https://spotify-audio-analysis.glitch.me/analysis.html)
 * [Track Features Filter](https://www.klangspektrum.digital/)
@@ -17,7 +23,7 @@
 * [More Spotify Applications](https://developer.spotify.com/community/showcase/)
 
 
-## Developer Documentation
+## Fraviz Developer Documentation
 > Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
 
 ### Used Libraries
@@ -74,3 +80,11 @@ https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/WebGL_best_practices
 
 ## WebGL Specifications
 https://www.khronos.org/registry/webgl/specs/latest/
+
+## Music Theory
+https://learningmusic.ableton.com/index.html
+
+## Threejs Links
+  * [Three.js Fundamentals](https://threejsfundamentals.org)
+  * [Three.js 2013](http://stemkoski.github.io/Three.js/#hello-world)
+  * [Random Terrain](https://alteredqualia.com/three/examples/webgl_terrain_dynamic.html)

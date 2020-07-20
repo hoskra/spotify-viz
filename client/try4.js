@@ -176,7 +176,7 @@ export default class Try4 extends Visualizer {
     beat > limit && (beat   = limit);
     section > limit && (section   = limit);
 
-    
+
     // console.log(this.sync.state.currentlyPlaying.name + this.sync.state.currentlyPlaying.artists[0].name)
     // console.log(this.sync.section)
 

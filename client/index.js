@@ -6,10 +6,9 @@ import Try4 from './try4'
 import Try5 from './try5'
 import Try6 from './try6'
 import Fraviz from './fraviz'
-import Fraviz2D from './fraviz-2d'
+import Fraviz2 from './fraviz2'
 import Example from './example'
 
-// import IndexData from './classes/indexData'
 import Visualizer from './classes/visualizer'
 
 let GUI_MODE = 0;
@@ -19,10 +18,6 @@ let JUST_ONCE = true;
 
 let artist, name;
 let danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo;
-
-// $(".gui").addClass("hiden");
-// let app = new Try5()
-
 
 function showHideGUI(){
   console.log("clicked")
@@ -44,7 +39,9 @@ class Index extends Visualizer {
       if (GUI_MODE === 0) {$(".gui").removeClass("hiden");}
       else {$(".gui").addClass("hiden")}
 
-      let app = new Fraviz();
+      let app = new Fraviz2();
+      $("#stats").addClass("hiden");
+
 
       $("#song").removeClass("hiden")
       $('body').keyup((e) => {
@@ -53,16 +50,23 @@ class Index extends Visualizer {
         } else if (e.keyCode == 97) {
           app = undefined
           app = new Try4()  // basic stats
+          $(".gui").removeClass("hiden");
         } else if (e.keyCode == 98) {
           app = undefined
           app = new Try2()  // wierd dancing trees
+          $(".gui").removeClass("hiden");
         } else if (e.keyCode == 99) {
           app = undefined
           app = new Try5()
+          $(".gui").removeClass("hiden");
         } else if (e.keyCode == 100) {
           app = undefined
           app = new Fraviz()
           location.reload();
+        } else if (e.keyCode == 101) {
+          app = undefined
+          app = new Fraviz2()
+          $("#stats").addClass("hiden");
         }
       });
 
@@ -70,28 +74,28 @@ class Index extends Visualizer {
       $("#1").click(()=>{
         app = undefined
         app = new Try4()  // basic stats
+        $(".gui").removeClass("hiden");
       })
       $("#2").click(()=>{
         app = undefined
         app = new Try2()  // wierd dancing trees
+        $(".gui").removeClass("hiden");
       })
       $("#3").click(()=>{
         app = undefined
         app = new Try5()
+        $(".gui").removeClass("hiden");
       })
       $("#4").click(()=>{
         app = undefined
         app = new Fraviz()
-        location.reload();
+        $(".gui").removeClass("hiden");
       })
-
-      // let app = new Try1();
-      // let app = new Try2();
-      // let app = new Try3();
-      // let app = new Try4();
-      // let app = new Try5();
-      // let app = new Fraviz();
-      // let app = new Fraviz2D();
+      $("#5").click(()=>{
+        app = undefined
+        app = new Fraviz2()
+        $("#stats").addClass("hiden");
+      })
 
   } else {
     auth()
@@ -111,6 +115,7 @@ paint ({ ctx, height, width, now }) {
     $("#song-name").html(name)
 
     if (SONG_ID) {
+      // reload window on song change
       if (this.sync.state.currentlyPlaying.id != SONG_ID) {
         location.reload();
       }

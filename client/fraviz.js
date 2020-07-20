@@ -5,35 +5,40 @@ import Stats from './libs/stats.module'
 import { moveGrid, separatedGrids } from './fraviz/grid';
 import { pitch } from './fraviz/pitch';
 import { Tree, rotateTree } from './fraviz/tree';
+import { getTrackFeatures } from './fraviz/trackFeatures';
 
 import * as d3 from 'd3-interpolate';
 import * as d3Color from 'd3-color';
 
+// basic objects
 var camera, renderer, scene, stats;
 var clock, clock2;
+let light1, light2;
+let cubes1, cubes2;
 
-let GRID_COLOR = 0xff0090;
-let grid_material = new THREE.LineBasicMaterial({color: GRID_COLOR});
 
-let light1;
-let light2;
-
+// state
 let PITCH_MODE = 0;
 let DANCING = true;
-
 let attributesSet = false;
 
+let SONG_DURATION;
+let SECTION_COUNT;
+let SECTIONS = []
 let BEATS = []
 let BARS = []
-let SECTIONS = []
 
-let SONG_DURATION;
-
+// colors
+let GRID_COLOR = 0xff0090;
 let PITCH_COLOR = 0x00d5ff;
-let PITCH_MATERIAL = new THREE.MeshBasicMaterial( { color: PITCH_COLOR });
-
 let LEAF_COLOR = 0xff3bf9;
 let BRANCH_COLOR = 0x2ff85d;
+
+
+// materials
+let grid_material = new THREE.LineBasicMaterial({color: GRID_COLOR});
+let pitch_material = new THREE.MeshBasicMaterial( { color: PITCH_COLOR });
+
 
 let branchGeometry = new THREE.BoxGeometry( 0.2, 0.6,  0.2 );
 let leafGeometry = new THREE.SphereGeometry( 0.3, 4, 5 )
@@ -42,24 +47,21 @@ let invisibleMaterial = new THREE.MeshBasicMaterial( { color: 0xbd0064 , visible
 let branchMaterial = new THREE.MeshBasicMaterial( { color:  BRANCH_COLOR} );
 let leafMaterial = new THREE.MeshBasicMaterial( { color: LEAF_COLOR  } );
 
-let cubes1;
-let cubes2;
+// let shadowMaterial = new THREE.MeshPhongMaterial( { color: BRANCH_COLOR} );
+let shadowMaterial = new THREE.MeshPhongMaterial( { color: 0x03fc0f, opacity: 1, transparent: true } )
+
 
 let toRotate = []
 let toRotateBeats = []
-let allTrees = new THREE.Group();
+let barTrees = new THREE.Group();
 let beatTrees = new THREE.Group();
 let spacing = 200
+let leftShadow, rightShadow;
+let shadowTrees = [];
 
 let middle;
 let middleMaterial = new THREE.MeshBasicMaterial( { color: 0x000000  } );
 
-let SECTION_COUNT;
-
-let HUE_COLORS = [
-  "#ACB6E5",
-  "#74ebd5",
-]
 
 let TREE_COUNT = 20;
 function treePerBar() {
@@ -71,10 +73,10 @@ function treePerBar() {
     t.scale(10)
 
     toRotate.push(t)
-    allTrees.add(t.main);
+    barTrees.add(t.main);
   }
 
-  scene.add(allTrees)
+  scene.add(barTrees)
 }
 
 function treePerBeat() {
@@ -91,6 +93,29 @@ function treePerBeat() {
   }
 
   scene.add(beatTrees)
+}
+
+let shadowScale = 60;
+let shadowX = 160;
+
+function createShadowTrees() {
+  let x = shadowX
+  let y = -80
+  let z = -600
+  let scale = shadowScale;
+  let degrees = 45;
+
+  leftShadow = new Tree(-x, y, z, degrees, false);
+  leftShadow.makeTree(branchGeometry, leafGeometry, invisibleMaterial, shadowMaterial, shadowMaterial, scene, true);
+  leftShadow.scale(scale)
+  shadowTrees.push(leftShadow)
+
+  rightShadow = new Tree(x, y, z, degrees, false);
+  rightShadow.makeTree(branchGeometry, leafGeometry, invisibleMaterial, shadowMaterial, shadowMaterial, scene, true);
+  rightShadow.scale(scale)
+  shadowTrees.push(rightShadow)
+
+  rightShadow.main.rotation.y = 100;
 }
 
 export default class Fraviz extends Visualizer {
@@ -113,6 +138,17 @@ export default class Fraviz extends Visualizer {
     $("body")[0].appendChild( stats.dom );
 
     init(camera, scene, renderer, GRID_COLOR);
+    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
+    hemiLight.position.set( 0, 400, 0 );
+    scene.add( hemiLight );
+    var directionalLight = new THREE.DirectionalLight( 0xffffff );
+    directionalLight.position.set( 0, 200, 100 );
+    directionalLight.castShadow = true;
+    directionalLight.shadow.camera.top = 180;
+    directionalLight.shadow.camera.bottom = - 100;
+    directionalLight.shadow.camera.left = - 120;
+    directionalLight.shadow.camera.right = 120;
+    scene.add( directionalLight );
     separatedGrids(scene, grid_material)
 
     let LEAF_COLOR = 0x023bf9;
@@ -122,8 +158,8 @@ export default class Fraviz extends Visualizer {
     let pitchY = 0;
     let pitchZ = -20;
 
-    pitch(scene, "pitch1", pitchX, pitchY, pitchZ, PITCH_MATERIAL );
-    pitch(scene, "pitch2", -pitchX, pitchY, pitchZ, PITCH_MATERIAL );
+    pitch(scene, "pitch1", pitchX, pitchY, pitchZ, pitch_material );
+    pitch(scene, "pitch2", -pitchX, pitchY, pitchZ, pitch_material );
 
     cubes1 = scene.getObjectByName( "pitch1" );
     cubes2 = scene.getObjectByName( "pitch2" );
@@ -147,14 +183,16 @@ export default class Fraviz extends Visualizer {
     scene.add( light1 );
     scene.add( light2 );
 
-    middle = new THREE.Mesh( new THREE.BoxGeometry( 100, 1,  5000 ), middleMaterial );
+    middle = new THREE.Mesh( new THREE.BoxGeometry( 100, 3,  5000 ), middleMaterial );
     scene.add(middle);
+
+
+    createShadowTrees();
   }
 
   hooks () {
     this.sync.on('segment', segment => {
       let pitches = this.sync.segment.pitches
-
       if (pitches)
         cubes1.children.forEach((cube, index) => {
           if(PITCH_MODE == 0){
@@ -181,11 +219,26 @@ export default class Fraviz extends Visualizer {
     this.sync.on('bar', bar => {
       light1.scale.set(3, 3, 3)
       light2.scale.set(3, 3, 3)
+
+      if(bar.confidence > 0.4){
+        leftShadow.main.scale.x  = shadowScale;
+        leftShadow.main.scale.y  = shadowScale;
+        leftShadow.main.scale.z  = shadowScale;
+        rightShadow.main.scale.x = shadowScale;
+        rightShadow.main.scale.y = shadowScale;
+        rightShadow.main.scale.z = shadowScale;
+      }
     });
 
     this.sync.on('beat', beat => {
       light1.scale.set(1, 1, 1)
       light2.scale.set(1, 1, 1)
+
+      if(beat.confidence > 0.5){
+        shadowMaterial.opacity = 1;
+        leftShadow.main.position.x  = -shadowX;
+        rightShadow.main.position.x = shadowX;
+      }
     });
 
     this.sync.on('section', section => {
@@ -194,8 +247,12 @@ export default class Fraviz extends Visualizer {
 
       if (section.index >= 1){
         let hue =  d3Color.hcl( d3.interpolateHslLong("#C6FFDD", "#FBD786", "#f7797d")(section.index  / SECTION_COUNT) ) .h
+        let hue2 =  d3Color.hcl( d3.interpolateHslLong("#ffa600", "#da08ff", "#00ffd5")(section.index  / SECTION_COUNT) ) .h
         grid_material.color.setHSL( hue, 1, 0.8 );
-        PITCH_MATERIAL.color.setHSL( hue, 1, 0.8 );
+        pitch_material.color.setHSL( hue, 1, 0.8 );
+        shadowMaterial.color.setHSL( hue2, 1, 0.8 );
+
+
 
         if (PITCH_MODE == 0){
           PITCH_MODE = 1;
@@ -218,7 +275,6 @@ export default class Fraviz extends Visualizer {
 
   paint ({ ctx, height, width, now }) {
     if (attributesSet){
-
       let beat = this.sync.beat.duration/this.sync.beat.elapsed
       let bar = this.sync.bar.duration/this.sync.bar.elapsed
 
@@ -226,34 +282,52 @@ export default class Fraviz extends Visualizer {
       bar > 5 && (bar   = 7);
 
       beatTrees.position.z +=  beat;
-      allTrees.position.z +=  bar;
+      barTrees.position.z +=  bar;
       if(beatTrees.position.z >= 3000) {
         beatTrees.position.z = 0;
       }
-      if(allTrees.position.z >= 3000) {
-        allTrees.position.z = 0;
+      if(barTrees.position.z >= 3000) {
+        barTrees.position.z = 0;
       }
 
       let speed = 0.5
 
+
       if(DANCING){
         if (this.sync.bar.index % 2 == 0){
           toRotate.forEach(element => {
-            rotateTree(element.toRotate, -1 , speed)
+            rotateTree(element.toRotate, -1, speed)
           });
           toRotateBeats.forEach(element => {
-            rotateTree(element.toRotate, -1 , speed)
+            rotateTree(element.toRotate, -1, speed)
           });
         } else {
             toRotate.forEach(element => {
               rotateTree(element.toRotate, 1, speed)
             });
             toRotateBeats.forEach(element => {
-              rotateTree(element.toRotate, 1 ,speed)
+              rotateTree(element.toRotate, 1, speed)
             });
         }
       }
+      // leftShadow.main.children[0].material.opacity -= 0.1;
+
+      let fadeOut = 0.03;
+      shadowMaterial.opacity -= fadeOut;
+      leftShadow.main.position.x -= 0.1;
+      rightShadow.main.position.x += 0.1;
+      leftShadow.main.scale.x -= 0.01;
+      leftShadow.main.scale.y -= 0.01;
+      leftShadow.main.scale.z -= 0.01;
+      rightShadow.main.scale.x -= 0.01;
+      rightShadow.main.scale.y -= 0.01;
+      rightShadow.main.scale.z -= 0.01;
+
     } else {
+
+      // console.log(this.sync.state.trackAnalysis.sections)
+      getTrackFeatures(this.sync.state.trackAnalysis.sections)
+
       BEATS = this.sync.state.trackAnalysis.beats;
       BARS = this.sync.state.trackAnalysis.bars;
       SECTIONS = this.sync.state.trackAnalysis.sections;
@@ -265,10 +339,18 @@ export default class Fraviz extends Visualizer {
       treePerBeat();
 
       let hue =  d3Color.hcl( d3.interpolateHsl("#C6FFDD", "#FBD786", "#f7797d")(0) ) .h
-      PITCH_MATERIAL.color.setHSL( hue, 1, 0.8 );
+      pitch_material.color.setHSL( hue, 1, 0.8 );
       grid_material.color.setHSL( hue, 1, 0.8 );
     }
 
+    //console.log(this.sync.state.trackAnalysis.track.start_of_fade_out);
+    //console.log(this.sync.state.trackAnalysis.track.start_of_fade_out);
+    // console.log(this.sync.state.trackProgress);
+
+
+
+    // rotateTree(leftShadow.toRotate,  -1, 30)
+    // rotateTree(rightShadow.toRotate, 1, 30)
 
     let volume = this.sync.volume;
     renderer.render( scene, camera );
