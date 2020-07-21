@@ -7,6 +7,9 @@ export const gridFragmentShader = `
   uniform float iTime;
   uniform float spacing;
   uniform float speed;
+  uniform float barPulse;
+  uniform float beatPulse;
+  uniform float clock;
   uniform int option;
   uniform sampler2D iChannel0;
 
@@ -21,8 +24,11 @@ export const gridFragmentShader = `
   void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec2 uv = fragCoord.xy / iResolution.xy;
     uv.x *= iResolution.x / iResolution.y;
+
     float z_shift = iTime/50.0;
-    uv = (uv.xy + vec2(2.0, z_shift)) * 50.0;
+    uv = (uv.xy + vec2(2.0, z_shift)) * 80.0;
+    uv /= spacing;
+    // uv.x /= clamp(pulse*60.0, 0.1, 1.0);
 
     if (option == 0) {
       vec4 noise = texture2D(iChannel0, floor(uv));
@@ -33,6 +39,7 @@ export const gridFragmentShader = `
       fragColor.rgb = vec3(1.0) * x * p;
       fragColor.a = 1.0;
       fragColor *= vec4( gridColor, 1.0);
+
     } else if (option == 1) {
       float coord_f = length(uv);
 
@@ -40,19 +47,21 @@ export const gridFragmentShader = `
       float line = abs(fract(coord_f - 0.5) - 0.5) / fwidth(coord_f);
 
       // Just visualize the grid lines directly
-      fragColor = vec4(vec3(1.0 - min(line, 1.0)), 1.0);
+      fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line, 1.0) ,1.0 - min(line, 1.0)      ),      1.0);
+      // fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line * beatPulse/20.0, 1.0) ,1.0 - min(line * barPulse/20.0, 1.0)      ),      1.0);
+
       fragColor *= vec4( gridColor, 1.0);
 
     } else if (option == 2) {
-      uv /= spacing;
       vec2 coord = uv;
       // Compute anti-aliased world-space grid lines
       vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
       float line = min(grid.x, grid.y);
+      // line *= pulse/50.0;
 
-      // Just visualize the grid lines directly
 
-      fragColor = vec4(vec3(1.0 - min(line, 1.0)), 1.0);
+      // fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line * beatPulse/20.0, 1.0) ,1.0 - min(line * barPulse/20.0, 1.0)      ),      1.0);
+      fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line, 1.0) ,1.0 - min(line, 1.0)      ),      1.0);
       fragColor *= vec4( gridColor, 1.0);
     }
 
@@ -75,15 +84,12 @@ export const gridVertexShader = `
 
   void main() {
     vUv = uv;
-
-    // float wavelength = 2.0;
-    // float amplitude  = 1.0;
-
-
     float k = 2.0 * 3.14 / wavelength;
 
-    // gl_Position = projectionMatrix * modelViewMatrix * (p, 1.0);
+    float x = position.x +  vUv.x;
+    float y = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
+    float z = position.z;
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position.x, amplitude * sin(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime)), position.z, 1.0 );
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( x, y, z, 1.0 );
   }
 `;
