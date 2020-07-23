@@ -24,7 +24,7 @@ let light1, light2;
 let cubes1, cubes2;
 
 let basicMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff  } );
-let uniforms, uniforms2;
+let uniforms, uniforms2, uniforms3;
 let target;
 
 let gridSpacing = 1;
@@ -90,6 +90,7 @@ export default class Fraviz2 extends Visualizer {
       spacing: { value: 1.0 },
       speed: { value: 1.0 },
       option: { value: 2 },
+      lsystemOption: { value: 2 },
       kochOption: { value: 1 },
       barPulse: { value: 0.0 },
       beatPulse: { value: 0.0 },
@@ -106,7 +107,25 @@ export default class Fraviz2 extends Visualizer {
       amplitude: { value: 1.0 },
       spacing: { value: 1.0 },
       speed: { value: 1.0 },
-      option: { value: 2 },
+      option: { value: 0 },
+      lsystemOption: { value: 0 },
+      kochOption: { value: 0 },
+      barPulse: { value: 0.0 },
+      beatPulse: { value: 0.0 },
+      clock: { value: 0.0 },
+      gridColor: { value: new THREE.Vector3(0.5, 0.2, 0.3) },
+    };
+
+    uniforms3 = {
+      iTime: { value: 0 },
+      iResolution:  { value: new THREE.Vector3(1, 1, 1) },
+      iChannel0: { value: texture },
+      wavelength: { value: 1.0 },
+      amplitude: { value: 1.0 },
+      spacing: { value: 1.0 },
+      speed: { value: 1.0 },
+      option: { value: 1 },
+      lsystemOption: { value: 1 },
       kochOption: { value: 0 },
       barPulse: { value: 0.0 },
       beatPulse: { value: 0.0 },
@@ -136,18 +155,32 @@ export default class Fraviz2 extends Visualizer {
        transparent: true,
        blending: THREE.NormalBlending,
      });
+    const lsysMaterial2 = new THREE.ShaderMaterial({
+      vertexShader: lsysVertexShader,
+       fragmentShader: lsysFragmentShader,
+       uniforms : uniforms2,
+       transparent: true,
+       blending: THREE.NormalBlending,
+     });
+    const lsysMaterial3 = new THREE.ShaderMaterial({
+      vertexShader: lsysVertexShader,
+       fragmentShader: lsysFragmentShader,
+       uniforms : uniforms3,
+       transparent: true,
+       blending: THREE.NormalBlending,
+     });
     const gridMaterial = new THREE.ShaderMaterial({ vertexShader: gridVertexShader, fragmentShader: gridFragmentShader, uniforms, });
 
     // var cubeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
     init(camera, scene, renderer);
 
-    var uvGeo = geometryWithUv(200, 200, 30)
+    var uvGeo = new THREE.PlaneGeometry( 200, 200, 60 );
 
     var fract = new THREE.Mesh( uvGeo, fractMaterial );
     fract.position.set(0,50,100);
     scene.add(fract);
 
-    var smallerGeo = new THREE.PlaneGeometry( 100, 100, 2 );
+    var smallerGeo = new THREE.PlaneGeometry( 100, 100, 30 );
     var fractLeft = new THREE.Mesh( smallerGeo, middleFractMaterial );
     var fractRight = new THREE.Mesh( smallerGeo, middleFractMaterial );
     fractLeft.position.set(-150,50,100);
@@ -157,10 +190,20 @@ export default class Fraviz2 extends Visualizer {
     scene.add(fractRight);
 
 
-    var lsys = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial );
-    lsys.position.set(0,50,300);
+    var lsys = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial3 );
+    lsys.position.set(-50,50,300);
 
     scene.add(lsys);
+
+    var lsys2 = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial2 );
+    lsys2.position.set(50,50,300);
+
+    scene.add(lsys2);
+
+    var lsysCenter = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial );
+    lsysCenter.position.set(0,50,300);
+
+    scene.add(lsysCenter);
 
 
     // GUI
@@ -197,6 +240,10 @@ export default class Fraviz2 extends Visualizer {
     var spacing = folder2.add( parameters, 'spacing' ).min(1.0).max(20).step(0.5).listen();
     folder2.open();
 
+    uniforms.lsystemOption.value = 2;
+    uniforms2.lsystemOption.value = 0;
+    uniforms3.lsystemOption.value = 1;
+
     wavelength.onChange(function(value) {   uniforms.wavelength.value = value;   });
     amplitude.onChange(function(value)  {   uniforms.amplitude.value  = value;   });
     spacing.onChange(function(value)    {   uniforms.spacing.value    = value;   });
@@ -212,6 +259,8 @@ export default class Fraviz2 extends Visualizer {
       c.g = c.g/100;
       c.b = c.b/100;
       uniforms.gridColor.value    = c;
+      uniforms2.gridColor.value    = c;
+      uniforms3.gridColor.value    = c;
     });
 
     let c = d3Color.color(defaultColor);
@@ -269,10 +318,12 @@ export default class Fraviz2 extends Visualizer {
         let c = d3Color.color(redHue[x]);
         uniforms.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
         uniforms2.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
+        uniforms3.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
       } else {
         let c = d3Color.color(blueHue[x]);
         uniforms.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
         uniforms2.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
+        uniforms3.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
       }
     });
   }
@@ -292,11 +343,13 @@ export default class Fraviz2 extends Visualizer {
         let c = d3Color.color(redHue[x]);
         uniforms.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
         uniforms2.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
+        uniforms3.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
       } else {
         console.log("Estimation: Minor modality")
         let c = d3Color.color(blueHue[x]);
         uniforms.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
         uniforms2.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
+        uniforms3.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
       }
 
       // console.log( this.sync.state.currentlyPlaying.artists[0] )
@@ -307,8 +360,10 @@ export default class Fraviz2 extends Visualizer {
 
     uniforms.barPulse.value = beat;
     uniforms2.barPulse.value = beat;
+    uniforms3.barPulse.value = beat;
     uniforms.beatPulse.value = bar;
     uniforms2.beatPulse.value = bar;
+    uniforms3.beatPulse.value = bar;
 
     let volume = this.sync.volume;
     renderer.render( scene, camera );

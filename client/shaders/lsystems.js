@@ -25,6 +25,7 @@ uniform float barPulse;
 uniform float beatPulse;
 uniform bool kochOption;
 uniform int option;
+uniform int lsystemOption;
 uniform int iDepth;
 uniform sampler2D iChannel0;
 
@@ -255,16 +256,38 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord )
     uv *= 8.;
 
     fragColor = vec4(0);
-    float l = left(uv - vec2(-5.,0.));
-    float c = center(uv);
-    float r = right(uv - vec2(5.,0.));
-    float d = min(r,min(l, c));
+    // float l = left(uv - vec2(-5.,0.));
+    // float c = center(uv);
+    // float r = right(uv - vec2(5.,0.));
+    // float d = min(r,min(l, c));
+    float d;
+
+    if (lsystemOption == 0) {
+      d = left(uv);
+    } else if(lsystemOption == 1) {
+      // d = center(uv);
+      d = center(uv);
+    } else {
+      float l = left(uv - vec2(-5.,0.));
+      float c = center(uv);
+      float r = right(uv - vec2(5.,0.));
+      d = min(r,min(l, c));
+    }
+
 
     float t = clamp(d, 0.0, .04) * 2.*12.5;
     vec4 bg = vec4(0);
-    vec4 fg = vec4(.8);
+    vec4 fg = vec4(1.0);
+
+    // fadeout
+    if(beatPulse >= 0.7 && lsystemOption != 2) {
+      fg.a = (0.8 - beatPulse);
+    }
+
     fragColor = mix(bg, fg, 1.-t);
     fragColor *= vec4(gridColor, 1.);
+
+
 }
 varying vec2 vUv;
 
@@ -279,6 +302,9 @@ export const lsysVertexShader = `
   uniform float amplitude;
   uniform float wavelength;
   uniform float speed;
+  uniform int option;
+  uniform int lsystemOption;
+  uniform float beatPulse;
 
   void main() {
     vUv = uv;
@@ -288,7 +314,11 @@ export const lsysVertexShader = `
     float x = position.x +  vUv.x;
     // float y = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
     float y = position.y + 2.0*sin(iTime/wavelength);
-    float z = position.z;
+    float z = position.z - 100.0 * beatPulse;
+
+    if (lsystemOption == 2) {
+      z = position.z;
+    }
 
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4( x, y, z, 1.0 );

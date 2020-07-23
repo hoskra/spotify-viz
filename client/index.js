@@ -43,6 +43,8 @@ class Index extends Visualizer {
       $("#stats").addClass("hiden");
 
 
+
+
       $("#song").removeClass("hiden")
       $('body').keyup((e) => {
         if(e.keyCode == 32){
@@ -125,6 +127,17 @@ paint ({ ctx, height, width, now }) {
 
     if(JUST_ONCE) {
       JUST_ONCE = false;
+      console.log("danceability: " + this.sync.state.trackFeatures.danceability);
+      console.log("energy: " + this.sync.state.trackFeatures.energy);
+      console.log("key: " + this.sync.state.trackFeatures.key);
+      console.log("loudness: " + this.sync.state.trackFeatures.loudness);
+      console.log("mode: " + this.sync.state.trackFeatures.mode);
+      console.log("speechiness: " + this.sync.state.trackFeatures.speechiness);
+      console.log("acousticness: " + this.sync.state.trackFeatures.acousticness);
+      console.log("instrumentalness: " + this.sync.state.trackFeatures.instrumentalness);
+      console.log("liveness: " + this.sync.state.trackFeatures.liveness);
+      console.log("valence: " + this.sync.state.trackFeatures.valence);
+      console.log("tempo: " + this.sync.state.trackFeatures.tempo);
     }
 
 

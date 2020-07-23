@@ -23,13 +23,13 @@ export const fractFragmentShader = `
     float angle = (2.0/3.0)*3.1415;
     vec2 n;
     if (kochOption) {
-      n = vec2(sin(angle), cos(angle));
-    } else {
-      if (barPulse > 0.5){
-        n = vec2(sin(angle+(1.0-barPulse)), cos(angle+(1.0-barPulse)));
+      if (beatPulse > 0.5){
+        n = vec2(sin(angle+(1.0-beatPulse)), cos(angle+(1.0-beatPulse)));
       } else {
-        n = vec2(sin(angle+barPulse), cos(angle+barPulse));
+        n = vec2(sin(angle+beatPulse), cos(angle+beatPulse));
       }
+    } else {
+        n = vec2(sin(angle+barPulse*0.1), cos(angle+barPulse*0.1));
       // n = vec2(sin(angle), cos(angle));
     }
 

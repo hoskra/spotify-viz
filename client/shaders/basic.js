@@ -31,14 +31,27 @@ export const gridFragmentShader = `
     // uv.x /= clamp(pulse*60.0, 0.1, 1.0);
 
     if (option == 0) {
-      vec4 noise = texture2D(iChannel0, floor(uv));
-      float a = mod(noise.r + noise.g + noise.b + iTime * float(0.15), 1.0);
-      float p = 1.0 - min(a, 0.6);
+      // vec4 noise = texture2D(iChannel0, floor(uv));
+      // float a = mod(noise.r + noise.g + noise.b + iTime * float(0.15), 1.0);
+      // float p = 1.0 - min(a, 0.6);
 
-      float x = grid(uv, 0.5); // resolution
-      fragColor.rgb = vec3(1.0) * x * p;
-      fragColor.a = 1.0;
-      fragColor *= vec4( gridColor, 1.0);
+      // float x = grid(uv, 0.5); // resolution
+      // fragColor.rgb = vec3(1.0) * x * p;
+      // fragColor.a = 1.0;
+      // fragColor *= vec4( gridColor, 1.0);
+
+      int TILES = 4;
+      float TIMESCALE = 0.25;
+      vec4 noise = texture2D(iChannel0, floor(uv * float(TILES)) / float(TILES));
+      float p = 1.0 - mod(noise.r + noise.g + noise.b + iTime * float(TIMESCALE), 1.0);
+      p = min(max(p * 3.0 - 1.8, 0.1), 2.0);
+
+      vec2 r = mod(uv * float(TILES), 1.0);
+      r = vec2(pow(r.x - 0.5, 2.0), pow(r.y - 0.5, 2.0));
+      p *= 1.0 - pow(min(1.0, 12.0 * dot(r, r)), 2.0)*beatPulse;
+
+      fragColor = vec4(gridColor, 1.0) * p;
+      fragColor.a = 0.9;
 
     } else if (option == 1) {
       float coord_f = length(uv);
