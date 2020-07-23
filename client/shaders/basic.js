@@ -86,9 +86,13 @@ export const gridVertexShader = `
     vUv = uv;
     float k = 2.0 * 3.14 / wavelength;
 
-    float x = position.x +  vUv.x;
-    float y = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
-    float z = position.z;
+      float x = position.x +  vUv.x;
+      float y = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
+      float z = position.z;
+
+    // float x = position.x +  vUv.x;
+    // float y = position.y;
+    // float z = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
 
     gl_Position = projectionMatrix * modelViewMatrix * vec4( x, y, z, 1.0 );
   }

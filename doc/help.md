@@ -17,6 +17,10 @@
 - Try removing ```#start``` from the URL.
 - Please try to refresh your browser or try switching to different browser.
 
+## Known bugs
+
+- Application is not generating visuals properly when same song is played multiple times.
+
 ## Haven't found what you were looking for? Do you have any suggestions?
 
 Feel free to email me: fraviz.info@gmail.com .

@@ -6,9 +6,10 @@ import { moveGrid, separatedGrids } from './fraviz/grid';
 import { pitch } from './fraviz/pitch';
 import { getTrackFeatures } from './fraviz/trackFeatures';
 import { vertexShader, fragmentShader } from './shaders/noise_cube';
-import { createGeometry } from './fraviz/shaderAssets';
+import { createGeometry, geometryWithUv } from './fraviz/shaderAssets';
 import { gridVertexShader, gridFragmentShader } from './shaders/basic';
 import { fractVertexShader, fractFragmentShader } from './shaders/fract';
+import { lsysVertexShader, lsysFragmentShader } from './shaders/lsystems';
 const dat = require('dat.gui');
 
 import * as d3 from 'd3-scale';
@@ -93,6 +94,7 @@ export default class Fraviz2 extends Visualizer {
       barPulse: { value: 0.0 },
       beatPulse: { value: 0.0 },
       clock: { value: 0.0 },
+      iDepth: { value: 1 },
       gridColor: { value: new THREE.Vector3(0.5, 0.2, 0.3) },
     };
 
@@ -127,19 +129,21 @@ export default class Fraviz2 extends Visualizer {
        transparent: true,
        blending: THREE.NormalBlending,
      });
+    const lsysMaterial = new THREE.ShaderMaterial({
+      vertexShader: lsysVertexShader,
+       fragmentShader: lsysFragmentShader,
+       uniforms : uniforms,
+       transparent: true,
+       blending: THREE.NormalBlending,
+     });
     const gridMaterial = new THREE.ShaderMaterial({ vertexShader: gridVertexShader, fragmentShader: gridFragmentShader, uniforms, });
 
     // var cubeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
     init(camera, scene, renderer);
 
-    var groundGeo = new THREE.Geometry();
+    var uvGeo = geometryWithUv(200, 200, 30)
 
-    // var cubeGeometry = new THREE.CubeGeometry( 30, 30, 30 );
-    // var cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
-    // cube.position.set(0,20,160);
-    // scene.add(cube);
-
-    var fract = new THREE.Mesh( new THREE.PlaneGeometry( 200, 200, 2 ), fractMaterial );
+    var fract = new THREE.Mesh( uvGeo, fractMaterial );
     fract.position.set(0,50,100);
     scene.add(fract);
 
@@ -151,6 +155,13 @@ export default class Fraviz2 extends Visualizer {
 
     scene.add(fractLeft);
     scene.add(fractRight);
+
+
+    var lsys = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial );
+    lsys.position.set(0,50,300);
+
+    scene.add(lsys);
+
 
     // GUI
     // http://stemkoski.github.io/Three.js/GUI-Controller.html
@@ -220,6 +231,7 @@ export default class Fraviz2 extends Visualizer {
       ground2.position.set(gridSpacing - gridShift,-500,0);
     });
 
+    let groundGeo = new THREE.PlaneGeometry( 100, 100, 20 )
     createGeometry(groundGeo);
 
     ground = new THREE.Mesh(groundGeo, gridMaterial );
@@ -286,6 +298,8 @@ export default class Fraviz2 extends Visualizer {
         uniforms.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
         uniforms2.gridColor.value    = new THREE.Vector3(c.r/100, c.g/100, c.b/100);
       }
+
+      // console.log( this.sync.state.currentlyPlaying.artists[0] )
     }
 
     let beat = this.sync.beat.elapsed/this.sync.beat.duration;
@@ -328,8 +342,15 @@ export default class Fraviz2 extends Visualizer {
       ground2.rotation.x = THREE.Math.degToRad(160)
     }
 
+    //console.log(speed)
+    // uniforms.wavelength.value = speed;
+    // uniforms.amplitude.value = speed/50;
+    // uniforms.spacing.value = speed;
+
+
     // uniforms.speed.value = speed;
     uniforms.speed.value = linearScale(speed);
+    uniforms.iDepth.value = 6 - (this.sync.tatum.index % 5 + 1);
     // console.log((speed))
     uniforms.iTime.value = clock.getElapsedTime();
 

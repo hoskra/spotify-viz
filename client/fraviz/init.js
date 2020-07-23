@@ -9,7 +9,7 @@ function onWindowResize() {
     BASE_RENDERER.setSize( window.innerWidth, window.innerHeight );
 }
 
-export function init(camera, scene, renderer, groundMat = new THREE.MeshLambertMaterial( { color: 0x000000 } )){
+export function init(camera, scene, renderer, groundMat = new THREE.MeshLambertMaterial( { color: 0x000000 } ), enableGround ) {
     BASE_CAMERA = camera;
     BASE_RENDERER = renderer;
 
@@ -30,7 +30,9 @@ export function init(camera, scene, renderer, groundMat = new THREE.MeshLambertM
     ground.position.y = - 33;
     ground.rotation.x = - Math.PI / 2;
     ground.receiveShadow = true;
-    scene.add( ground );
+    if(enableGround) {
+        scene.add( ground );
+    }
 
     // RENDERER
     renderer.setPixelRatio( window.devicePixelRatio );
