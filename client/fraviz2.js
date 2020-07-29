@@ -2,35 +2,29 @@ import Visualizer from './classes/visualizer'
 import * as THREE from 'three'
 import { init } from './fraviz/init';
 import Stats from './libs/stats.module'
-import { moveGrid, separatedGrids } from './fraviz/grid';
-import { pitch } from './fraviz/pitch';
-import { getTrackFeatures } from './fraviz/trackFeatures';
 import { vertexShader, fragmentShader } from './shaders/noise_cube';
-import { createGeometry, geometryWithUv } from './fraviz/shaderAssets';
+import { createGeometry, createFravizMaterial } from './fraviz/shaderAssets';
 import { gridVertexShader, gridFragmentShader } from './shaders/basic';
 import { fractVertexShader, fractFragmentShader } from './shaders/fract';
 import { lsysVertexShader, lsysFragmentShader } from './shaders/lsystems';
+import { uniforms, uniforms2, uniforms3 } from './shaders/uniforms';
+
 const dat = require('dat.gui');
 
 import * as d3 from 'd3-scale';
 import * as d3Interpolate from 'd3-interpolate';
 import * as d3Color from 'd3-color';
 
-
 // basic objects
 var camera, renderer, scene, stats;
-var clock, clock2;
-let light1, light2;
-let cubes1, cubes2;
+var clock;
 
 let basicMaterial = new THREE.MeshBasicMaterial( { color: 0xffffff  } );
-let uniforms, uniforms2, uniforms3;
-let target;
 
 let gridSpacing = 1;
-let gridScale = 130;
-let gridShift = 600;
-let secondGrid = false;
+let grid = -1000;
+let trees = 35;
+let koch = -34;
 
 let ground,ground2;
 var option = 2;
@@ -38,19 +32,22 @@ var option = 2;
 let attributesSet = false
 let isMajor = false;
 
-// https://observablehq.com/@d3/working-with-color
-
-let redHue = d3Interpolate.quantize(d3Interpolate.interpolateHcl("#ffd119", "#bf0050"),  5);
+let redHue = d3Interpolate.quantize(d3Interpolate.interpolateHcl("#ffd119", "#bf0050"),  5);  // https://observablehq.com/@d3/working-with-color
 let blueHue = d3Interpolate.quantize(d3Interpolate.interpolateHcl("#b9e038", "#05496e"), 5);
 let defaultColor = "#dff0b9";
+
+let audienceGroup = new THREE.Group();
+let plane, fractLeft, fractRight, lsys, lsys2, lsysCenter;
 
 export default class Fraviz2 extends Visualizer {
   constructor () {
     super({ volumeSmoothing: 100 })
 
+    // INITIALIZATION
     camera = new THREE.PerspectiveCamera( 50, window.innerWidth / window.innerHeight , 1, 10000 );
     scene = new THREE.Scene();
     renderer = new THREE.WebGLRenderer( { antialias: true, autoSize: true  } );
+    init(camera, scene, renderer);
 
     // CLOCK
     clock = new THREE.Clock;
@@ -61,196 +58,111 @@ export default class Fraviz2 extends Visualizer {
     stats.dom.classList.add("gui");
     $("body")[0].appendChild( stats.dom );
 
+    // MATERIALS
+    const cubeMaterial = createFravizMaterial( vertexShader, fragmentShader, uniforms);
+    const fractMaterial = createFravizMaterial(fractVertexShader, fractFragmentShader, uniforms);
+    const middleFractMaterial = createFravizMaterial(fractVertexShader, fractFragmentShader, uniforms2);
+    const lsysMaterial = createFravizMaterial(lsysVertexShader, lsysFragmentShader, uniforms);
+    const lsysMaterial2 = createFravizMaterial(lsysVertexShader, lsysFragmentShader, uniforms2);
+    const lsysMaterial3 = createFravizMaterial(lsysVertexShader, lsysFragmentShader, uniforms3);
+    const gridMaterial = createFravizMaterial(gridVertexShader, gridFragmentShader, uniforms);
 
-    var hemiLight = new THREE.HemisphereLight( 0xffffff, 0x444444 );
-    hemiLight.position.set( 0, 400, 0 );
-    scene.add( hemiLight );
-    var directionalLight = new THREE.DirectionalLight( 0xffffff );
-    directionalLight.position.set( 0, 200, 100 );
-    directionalLight.castShadow = true;
-    directionalLight.shadow.camera.top = 180;
-    directionalLight.shadow.camera.bottom = - 100;
-    directionalLight.shadow.camera.left = - 120;
-    directionalLight.shadow.camera.right = 120;
-    scene.add( directionalLight );
 
-    const loader = new THREE.TextureLoader();
-    const texture = loader.load('https://threejsfundamentals.org/threejs/resources/images/bayer.png');
-    texture.minFilter = THREE.NearestFilter;
-    texture.magFilter = THREE.NearestFilter;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
+    var geo = new THREE.PlaneGeometry( 1000, 500, 100 );
+    plane = new THREE.Mesh( geo, gridMaterial );
 
-    uniforms = {
-      iTime: { value: 0 },
-      iResolution:  { value: new THREE.Vector3(1, 1, 1) },
-      iChannel0: { value: texture },
-      wavelength: { value: 1.0 },
-      amplitude: { value: 1.0 },
-      spacing: { value: 1.0 },
-      speed: { value: 1.0 },
-      option: { value: 2 },
-      lsystemOption: { value: 2 },
-      kochOption: { value: 1 },
-      barPulse: { value: 0.0 },
-      beatPulse: { value: 0.0 },
-      clock: { value: 0.0 },
-      iDepth: { value: 1 },
-      gridColor: { value: new THREE.Vector3(0.5, 0.2, 0.3) },
-    };
+    plane.position.set(0,-1000,10);
+    plane.rotation.x = THREE.Math.degToRad(70)
+    plane.scale.x = 10;
+    plane.scale.y = 10;
+    plane.scale.z = 10;
 
-    uniforms2 = {
-      iTime: { value: 0 },
-      iResolution:  { value: new THREE.Vector3(1, 1, 1) },
-      iChannel0: { value: texture },
-      wavelength: { value: 1.0 },
-      amplitude: { value: 1.0 },
-      spacing: { value: 1.0 },
-      speed: { value: 1.0 },
-      option: { value: 0 },
-      lsystemOption: { value: 0 },
-      kochOption: { value: 0 },
-      barPulse: { value: 0.0 },
-      beatPulse: { value: 0.0 },
-      clock: { value: 0.0 },
-      gridColor: { value: new THREE.Vector3(0.5, 0.2, 0.3) },
-    };
+    scene.add(plane);
 
-    uniforms3 = {
-      iTime: { value: 0 },
-      iResolution:  { value: new THREE.Vector3(1, 1, 1) },
-      iChannel0: { value: texture },
-      wavelength: { value: 1.0 },
-      amplitude: { value: 1.0 },
-      spacing: { value: 1.0 },
-      speed: { value: 1.0 },
-      option: { value: 1 },
-      lsystemOption: { value: 1 },
-      kochOption: { value: 0 },
-      barPulse: { value: 0.0 },
-      beatPulse: { value: 0.0 },
-      clock: { value: 0.0 },
-      gridColor: { value: new THREE.Vector3(0.5, 0.2, 0.3) },
-    };
-
-    const cubeMaterial = new THREE.ShaderMaterial({ vertexShader, fragmentShader, uniforms, });
-    const fractMaterial = new THREE.ShaderMaterial({
-      vertexShader: fractVertexShader,
-       fragmentShader: fractFragmentShader,
-       uniforms,
-       transparent: true,
-       blending: THREE.NormalBlending,
-     });
-    const middleFractMaterial = new THREE.ShaderMaterial({
-      vertexShader: fractVertexShader,
-       fragmentShader: fractFragmentShader,
-       uniforms : uniforms2,
-       transparent: true,
-       blending: THREE.NormalBlending,
-     });
-    const lsysMaterial = new THREE.ShaderMaterial({
-      vertexShader: lsysVertexShader,
-       fragmentShader: lsysFragmentShader,
-       uniforms : uniforms,
-       transparent: true,
-       blending: THREE.NormalBlending,
-     });
-    const lsysMaterial2 = new THREE.ShaderMaterial({
-      vertexShader: lsysVertexShader,
-       fragmentShader: lsysFragmentShader,
-       uniforms : uniforms2,
-       transparent: true,
-       blending: THREE.NormalBlending,
-     });
-    const lsysMaterial3 = new THREE.ShaderMaterial({
-      vertexShader: lsysVertexShader,
-       fragmentShader: lsysFragmentShader,
-       uniforms : uniforms3,
-       transparent: true,
-       blending: THREE.NormalBlending,
-     });
-    const gridMaterial = new THREE.ShaderMaterial({ vertexShader: gridVertexShader, fragmentShader: gridFragmentShader, uniforms, });
-
-    // var cubeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
-    init(camera, scene, renderer);
-
-    var uvGeo = new THREE.PlaneGeometry( 200, 200, 60 );
-
+    var uvGeo = new THREE.PlaneGeometry( 260, 260, 60 );
     var fract = new THREE.Mesh( uvGeo, fractMaterial );
+    var fract2 = new THREE.Mesh( uvGeo, fractMaterial );
+
     fract.position.set(0,50,100);
     scene.add(fract);
 
     var smallerGeo = new THREE.PlaneGeometry( 100, 100, 30 );
-    var fractLeft = new THREE.Mesh( smallerGeo, middleFractMaterial );
-    var fractRight = new THREE.Mesh( smallerGeo, middleFractMaterial );
-    fractLeft.position.set(-150,50,100);
-    fractRight.position.set(150,50,100);
+    fractLeft = new THREE.Mesh( smallerGeo, middleFractMaterial );
+    fractRight = new THREE.Mesh( smallerGeo, middleFractMaterial );
+    fractLeft.position.set(-180,koch,100);
+    fractRight.position.set(180,koch,100);
 
     scene.add(fractLeft);
     scene.add(fractRight);
 
 
-    var lsys = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial3 );
-    lsys.position.set(-50,50,300);
-
-    scene.add(lsys);
-
-    var lsys2 = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial2 );
-    lsys2.position.set(50,50,300);
-
-    scene.add(lsys2);
-
-    var lsysCenter = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial );
+    // LSYSTEM FRACTAL OBJECTS
+    lsys = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial3 );
+    lsys2 = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial2 );
+    lsysCenter = new THREE.Mesh( new THREE.PlaneGeometry( 50, 50, 20 ), lsysMaterial );
+    lsys.position.set(-50,trees,300);
+    lsys2.position.set(50,trees,300);
     lsysCenter.position.set(0,50,300);
-
+    scene.add(lsys);
+    scene.add(lsys2);
     scene.add(lsysCenter);
+
+    let leftAudience = lsysCenter.clone();
+    leftAudience.position.set(-50,35,330);
+    audienceGroup.add(leftAudience);
+    let rightAudience = lsysCenter.clone();
+    rightAudience.position.set(50,35,330);
+    audienceGroup.add(rightAudience);
+
+
 
 
     // GUI
     // http://stemkoski.github.io/Three.js/GUI-Controller.html
     var gui = new dat.GUI();
-    var parameters = {
-      gridSpacing,
-      gridScale,
-      gridShift,
-      color: defaultColor, // color (change "#" to "0x")
-      opacity: 1,
-      secondGrid,
-      wavelength: 1.365,
-      amplitude: 0.03,
-      spacing: 2.0,
-      option,
-      material: "Phong",
-      reset: function() { resetCube() }
-    };
+    var parameters = { gridSpacing,
+       color: defaultColor,
+       grid: 1,
+       trees: 1,
+       koch: 1,
+       opacity: 1,
+       wavelength: 5.2,
+       amplitude: 7.03,
+       spacing: 2.0,
+       option: 2,
+       material: "Phong",
+       angle: 30,
+     reset: function() { resetCube() }};
+
     uniforms.wavelength.value  = parameters.wavelength;
     uniforms.amplitude.value   = parameters.amplitude;
     uniforms.spacing.value   = parameters.spacing;
 
-    var folder1 = gui.addFolder('Grid Objects');
-    var _gridSpacing = folder1.add( parameters, 'gridSpacing' ).min(-500).max(500).step(1).listen();
-    var _gridScale = folder1.add( parameters, 'gridScale' ).min(0).max(300).step(1).listen();
-    var _gridShift = folder1.add( parameters, 'gridShift' ).min(-800).max(800).step(1).listen();
+    var folder1 = gui.addFolder('Placement');
+    var _grid = folder1.add( parameters, 'grid' ).min(-1000).max(500).step(1).listen();
+    var _trees = folder1.add( parameters, 'trees' ).min(0).max(300).step(1).listen();
+    var _koch = folder1.add( parameters, 'koch' ).min(-800).max(800).step(1).listen();
     folder1.open();
 
-
+      gui.close()
     var folder2 = gui.addFolder('Wave Properties');
-    var wavelength = folder2.add( parameters, 'wavelength' ).min(0.1).max(5).step(0.005).listen();
-    var amplitude = folder2.add( parameters, 'amplitude' ).min(0.001).max(2).step(0.005).listen();
+    var wavelength = folder2.add( parameters, 'wavelength' ).min(0.1).max(20).step(0.005).listen();
+    var amplitude = folder2.add( parameters, 'amplitude' ).min(0.001).max(20).step(0.005).listen();
     var spacing = folder2.add( parameters, 'spacing' ).min(1.0).max(20).step(0.5).listen();
     folder2.open();
 
     uniforms.lsystemOption.value = 2;
     uniforms2.lsystemOption.value = 0;
     uniforms3.lsystemOption.value = 1;
+    uniforms.option.value = 2;
 
     wavelength.onChange(function(value) {   uniforms.wavelength.value = value;   });
     amplitude.onChange(function(value)  {   uniforms.amplitude.value  = value;   });
     spacing.onChange(function(value)    {   uniforms.spacing.value    = value;   });
 
-    _gridScale.onChange(function(value)   {   gridScale = value;   });
-    _gridSpacing.onChange(function(value) {   gridSpacing = value;   });
-    _gridShift.onChange(function(value)   {   gridShift = value;   });
+    _grid.onChange(function(value)   {   grid = value;   });
+    _trees.onChange(function(value) {    trees = value;   });
+    _koch.onChange(function(value)   {   koch = value;   });
 
     var cubeColor = gui.addColor( parameters, 'color' ).name('Color').listen();
     cubeColor.onChange(function(value) {
@@ -258,9 +170,14 @@ export default class Fraviz2 extends Visualizer {
       c.r = c.r/100;
       c.g = c.g/100;
       c.b = c.b/100;
-      uniforms.gridColor.value    = c;
-      uniforms2.gridColor.value    = c;
-      uniforms3.gridColor.value    = c;
+      // uniforms.gridColor.value    = c;
+      // uniforms2.gridColor.value    = c;
+      // uniforms3.gridColor.value    = c;
+
+      scene.background.r = c.r;
+      scene.background.g = c.g;
+      scene.background.b = c.b;
+      console.log(scene)
     });
 
     let c = d3Color.color(defaultColor);
@@ -274,29 +191,19 @@ export default class Fraviz2 extends Visualizer {
     option = gui.add( parameters, 'option', optionList ).name('Grid type').listen();
     option.onChange(function(value)    {   uniforms.option.value    = value;   });
 
-    var cubeVisible = gui.add( parameters, 'secondGrid' ).name('second grid').listen();
-    cubeVisible.onChange(function(value) {
-      secondGrid = value;
-      ground2.position.set(gridSpacing - gridShift,-500,0);
-    });
 
-    let groundGeo = new THREE.PlaneGeometry( 100, 100, 20 )
-    createGeometry(groundGeo);
+    // var cubeVisible = gui.add( parameters, 'secondGrid' ).name('second grid').listen();
+    // cubeVisible.onChange(function(value) {
+    //   secondGrid = value;
+    //   ground2.position.set(gridSpacing - gridShift,-500,0);
+    // });
 
-    ground = new THREE.Mesh(groundGeo, gridMaterial );
-    ground.position.set(-gridSpacing - gridShift,10,0);
-    ground.scale.x = gridScale;
-    ground.scale.y = gridScale;
-    ground.scale.z = gridScale;
-    scene.add(ground);
 
-    ground2 = new THREE.Mesh( groundGeo, gridMaterial );
-    ground2.position.set(gridSpacing - gridShift,-500,0);
-    ground2.scale.x = gridScale;
-    ground2.scale.y = gridScale;
-    ground2.scale.z = gridScale;
+    var angle = gui.add( parameters, 'angle' ).min(1.0).max(360).step(1.0).listen();
+    angle.onChange(value => {
+      plane.rotation.x = THREE.Math.degToRad(value)
+    } )
 
-    scene.add(ground2);
   }
 
   hooks () {
@@ -338,6 +245,7 @@ export default class Fraviz2 extends Visualizer {
       let x = (this.sync.section.index) % 5;
       x = (this.sync.section.index % 10) > 4 ? 4 - x : x;
       isMajor = this.sync.state.trackFeatures.mode;
+
       if(isMajor) {
         console.log("Estimation: Major modality")
         let c = d3Color.color(redHue[x]);
@@ -353,6 +261,29 @@ export default class Fraviz2 extends Visualizer {
       }
 
       // console.log( this.sync.state.currentlyPlaying.artists[0] )
+
+      if ( this.sync.state.trackFeatures.danceability > 0.65 ) {
+        uniforms.option.value = 2;
+      }
+
+      //
+      if ( this.sync.state.trackFeatures.energy > 0.5 ) {
+        uniforms.wavelength.value = 4.58;
+        uniforms.amplitude.value  = 7.15
+      }
+
+      if ( this.sync.state.trackFeatures.liveness >= 0.8 ) {
+        scene.add(audienceGroup);
+      }
+
+      // slow long waves
+      if (this.sync.state.trackFeatures.energy < 0.4 ) {
+        uniforms.wavelength.value = 3.26;
+        uniforms.amplitude.value  = 2.7;
+      }
+
+
+
     }
 
     let beat = this.sync.beat.elapsed/this.sync.beat.duration;
@@ -377,37 +308,17 @@ export default class Fraviz2 extends Visualizer {
       .range([1.1, 1.5])
       .clamp(true);
 
-    // if (volume) {
-    //   speed = 0.2 + volume * volume;
-    //   console.log(speed)
-    //   if (speed > 3)
-    //     speed = 3
-    // }
+    plane.position.y = grid
+    fractLeft.position.y = koch;
+    fractRight.position.y = koch;
 
-    ground.position.set(- gridShift, 10 - gridSpacing/20, 0);
-    ground.scale.x = gridScale;
-    ground.scale.y = gridScale;
-    ground.scale.z = gridScale;
+    lsys.position.y = trees;
+    lsys2.position.y = trees;
+    lsysCenter.position.y = trees;
 
-    if(secondGrid) {
-      ground2.position.set(-1600 - gridShift, 420 + gridSpacing, -200);
-      ground2.scale.x = gridScale * 3.5;
-      ground2.scale.y = gridScale * 3.5;
-      ground2.scale.z = gridScale * 3.5;
-      ground2.rotation.x = THREE.Math.degToRad(160)
-    }
-
-    //console.log(speed)
-    // uniforms.wavelength.value = speed;
-    // uniforms.amplitude.value = speed/50;
-    // uniforms.spacing.value = speed;
-
-
-    // uniforms.speed.value = speed;
     uniforms.speed.value = linearScale(speed);
     uniforms.iDepth.value = 6 - (this.sync.tatum.index % 5 + 1);
-    // console.log((speed))
-    uniforms.iTime.value = clock.getElapsedTime();
+    uniforms.iTime.value = clock.getElapsedTime() % 20 ;
 
   }
 }

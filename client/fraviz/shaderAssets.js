@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { Material } from 'three';
 
 export function createGeometry(groundGeo, size = 10) {
   let width =  size;
@@ -78,4 +79,18 @@ export function geometryWithUv(x, y, divisions) {
   }
   geometry .uvsNeedUpdate = true;
   return geometry;
+}
+
+export function createFravizMaterial(vertexShader, fragmentShader, uniforms) {
+
+  let material = new THREE.ShaderMaterial({
+    vertexShader,
+     fragmentShader,
+     uniforms,
+     transparent: true,
+     blending: THREE.NormalBlending,
+     side: THREE.DoubleSide 
+   });
+
+   return material;
 }

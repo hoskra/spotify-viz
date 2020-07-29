@@ -164,7 +164,7 @@ export default class Try4 extends Visualizer {
 
     let volume = this.sync.volume * 10;
     let tatum = this.sync.tatum.duration/this.sync.tatum.elapsed
-    let segment = this.sync.section.duration/this.sync.section.elapsed
+    let segment = this.sync.segment.duration/this.sync.segment.elapsed
     let beat = this.sync.beat.duration/this.sync.beat.elapsed
     let bar = this.sync.bar.duration/this.sync.bar.elapsed
     let section = this.sync.section.duration/this.sync.section.elapsed

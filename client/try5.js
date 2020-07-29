@@ -240,7 +240,7 @@ export default class Try5 extends Visualizer {
     // let volume = this.sync.volume * 10; let tatum = this.sync.tatum.progress * 10; let segment = this.sync.segment.progress * 10; let beat = this.sync.beat.progress * 10; let bar = this.sync.bar.progress * 10; let section = this.sync.section.progress * 10;
     let volume = this.sync.volume * 10;
     let tatum = this.sync.tatum.duration/this.sync.tatum.elapsed
-    let segment = this.sync.section.duration/this.sync.section.elapsed
+    let segment = this.sync.segment.duration/this.sync.segment.elapsed
     let beat = this.sync.beat.duration/this.sync.beat.elapsed
     let bar = this.sync.bar.duration/this.sync.bar.elapsed
     let section = this.sync.section.duration/this.sync.section.elapsed

@@ -35,9 +35,24 @@ export const fragmentShader = `
   `;
 
 export const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-  }
+varying vec2 vUv;
+uniform float iTime;
+uniform float wavelength;
+uniform float amplitude;
+uniform float speed;
+
+void main() {
+  vUv = uv;
+  float k = 2.0 * 3.14 / wavelength;
+
+    float x = position.x +  vUv.x;
+    float y = position.y;
+    float z = 5.0 * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
+
+  // float x = position.x +  vUv.x;
+  // float y = position.y;
+  // float z = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( x, y, z, 1.0 );
+}
 `;

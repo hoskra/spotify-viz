@@ -32,8 +32,13 @@ uniform sampler2D iChannel0;
 
 mat3 Rot (float angle)
 {
-    float c = cos(angle);
-    float s = sin(angle);
+  float c = cos(angle);
+  float s = sin(angle);
+  //if (lsystemOption == 0) {
+  //  c = cos(angle * barPulse);
+  //  s = sin(angle * barPulse);
+  //}
+
 
 return  mat3(
         vec3(c, s, 0),
@@ -44,11 +49,17 @@ return  mat3(
 
 mat3 Disp (vec2 displacement)
 {
-return  mat3(
+  vec2 z = vec2(displacement.x*beatPulse*1.5, displacement.y *beatPulse*1.5);
+
+  if ( false ) {
+     z = vec2(displacement.x, displacement.y);
+  }
+
+  return  mat3(
         vec3(1, 0, 0),
         vec3(0, 1, 0),
-        vec3(vec2(displacement.x*beatPulse*2.0, displacement.y *beatPulse*2.0), 1)
-);
+        vec3(z, 1)
+    );
 }
 
 float sdCappedCylinder( vec2 p, vec2 h )
@@ -311,13 +322,14 @@ export const lsysVertexShader = `
     float k = 2.0 * 3.14 / wavelength;
 
     // gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-    float x = position.x +  vUv.x;
+    float x = position.x;
     // float y = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
-    float y = position.y + 2.0*sin(iTime/wavelength);
+    float y = position.y - 50.0 * beatPulse;
     float z = position.z - 100.0 * beatPulse;
 
     if (lsystemOption == 2) {
       z = position.z;
+      y = position.y;
     }
 
 

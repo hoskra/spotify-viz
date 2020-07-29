@@ -28,32 +28,32 @@ export const gridFragmentShader = `
     float z_shift = iTime/50.0;
     uv = (uv.xy + vec2(2.0, z_shift)) * 80.0;
     uv /= spacing;
+    uv /= 20.0;
+
     // uv.x /= clamp(pulse*60.0, 0.1, 1.0);
 
+    int TILES = 6;
+    float TIMESCALE = 0.25;
+    vec4 noise = texture2D(iChannel0, floor(uv * float(TILES)) / float(TILES));
+    float p = 1.0 - mod(noise.r + noise.g + noise.b + iTime * float(TIMESCALE), 1.0);
+    p = min(max(p * 3.0 - 1.8, 0.1), 2.0);
+
+    vec2 r = mod(uv * float(TILES), 1.0);
+    r = vec2(pow(r.x - 0.5, 2.0), pow(r.y - 0.5, 2.0));
+    p *= 1.0 - pow(min(1.0, 12.0 * dot(r, r)), 2.0)*beatPulse;
+
     if (option == 0) {
-      // vec4 noise = texture2D(iChannel0, floor(uv));
-      // float a = mod(noise.r + noise.g + noise.b + iTime * float(0.15), 1.0);
-      // float p = 1.0 - min(a, 0.6);
 
-      // float x = grid(uv, 0.5); // resolution
-      // fragColor.rgb = vec3(1.0) * x * p;
-      // fragColor.a = 1.0;
-      // fragColor *= vec4( gridColor, 1.0);
-
-      int TILES = 4;
-      float TIMESCALE = 0.25;
-      vec4 noise = texture2D(iChannel0, floor(uv * float(TILES)) / float(TILES));
-      float p = 1.0 - mod(noise.r + noise.g + noise.b + iTime * float(TIMESCALE), 1.0);
-      p = min(max(p * 3.0 - 1.8, 0.1), 2.0);
-
-      vec2 r = mod(uv * float(TILES), 1.0);
-      r = vec2(pow(r.x - 0.5, 2.0), pow(r.y - 0.5, 2.0));
-      p *= 1.0 - pow(min(1.0, 12.0 * dot(r, r)), 2.0)*beatPulse;
-
-      fragColor = vec4(gridColor, 1.0) * p;
+      fragColor = vec4(gridColor, 1.0) *p;
       fragColor.a = 0.9;
 
+      if (barPulse > 0.6){
+        fragColor *=  p;
+      }
+
+
     } else if (option == 1) {
+      uv *= 60.0;
       float coord_f = length(uv);
 
       // Compute anti-aliased world-space grid lines
@@ -64,8 +64,13 @@ export const gridFragmentShader = `
       // fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line * beatPulse/20.0, 1.0) ,1.0 - min(line * barPulse/20.0, 1.0)      ),      1.0);
 
       fragColor *= vec4( gridColor, 1.0);
+      if (barPulse > 0.5){
+        fragColor *= p*3.0;
+      }
 
     } else if (option == 2) {
+      uv *= 10.0;
+
       vec2 coord = uv;
       // Compute anti-aliased world-space grid lines
       vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
@@ -76,6 +81,9 @@ export const gridFragmentShader = `
       // fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line * beatPulse/20.0, 1.0) ,1.0 - min(line * barPulse/20.0, 1.0)      ),      1.0);
       fragColor = vec4(vec3(1.0 - min(line, 1.0),1.0 - min(line, 1.0) ,1.0 - min(line, 1.0)      ),      1.0);
       fragColor *= vec4( gridColor, 1.0);
+      if (barPulse > 0.5){
+        fragColor *= p*3.0;
+      }
     }
 
   }
@@ -99,14 +107,17 @@ export const gridVertexShader = `
     vUv = uv;
     float k = 2.0 * 3.14 / wavelength;
 
-      float x = position.x +  vUv.x;
-      float y = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
-      float z = position.z;
 
-    // float x = position.x +  vUv.x;
-    // float y = position.y;
-    // float z = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
+    float x = position.x ;
+    float y = position.y;
+    float z = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( x, y, z, 1.0 );
+
+
+  // float x = position.x +  vUv.x;
+  // float y = position.y;
+  // float z = amplitude * cos(k * (position.x - clamp(speed, 1.0, 1.8) * iTime/40.0 - iTime));
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4( x, y, z, 1.0 );
   }
 `;
