@@ -263,7 +263,7 @@ export default class Fraviz2 extends Visualizer {
       // console.log( this.sync.state.currentlyPlaying.artists[0] )
 
       if ( this.sync.state.trackFeatures.danceability > 0.65 ) {
-        uniforms.option.value = 2;
+        uniforms.option.value = 0;
       }
 
       //
