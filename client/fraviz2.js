@@ -144,7 +144,7 @@ export default class Fraviz2 extends Visualizer {
     var _koch = folder1.add( parameters, 'koch' ).min(-800).max(800).step(1).listen();
     folder1.open();
 
-      gui.close()
+    gui.close()
     var folder2 = gui.addFolder('Wave Properties');
     var wavelength = folder2.add( parameters, 'wavelength' ).min(0.1).max(20).step(0.005).listen();
     var amplitude = folder2.add( parameters, 'amplitude' ).min(0.001).max(20).step(0.005).listen();
@@ -318,7 +318,7 @@ export default class Fraviz2 extends Visualizer {
 
     uniforms.speed.value = linearScale(speed);
     uniforms.iDepth.value = 6 - (this.sync.tatum.index % 5 + 1);
-    uniforms.iTime.value = clock.getElapsedTime() % 20 ;
+    uniforms.iTime.value = clock.getElapsedTime() % 20 + 2;
 
   }
 }
