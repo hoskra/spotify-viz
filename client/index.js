@@ -19,7 +19,6 @@ let artist, name;
 let danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo;
 
 function showHideGUI(){
-  console.log("clicked")
   if (GUI_MODE === 0) {
     $(".gui").addClass("hiden");
     GUI_MODE = 1

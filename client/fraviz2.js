@@ -115,94 +115,95 @@ export default class Fraviz2 extends Visualizer {
     audienceGroup.add(rightAudience);
 
 
-
-
     // GUI
     // http://stemkoski.github.io/Three.js/GUI-Controller.html
-    var gui = new dat.GUI();
-    var parameters = { gridSpacing,
-       color: defaultColor,
-       grid: 1,
-       trees: 1,
-       koch: 1,
-       opacity: 1,
-       wavelength: 5.2,
-       amplitude: 7.03,
-       spacing: 2.0,
-       option: 2,
-       material: "Phong",
-       angle: 30,
-     reset: function() { resetCube() }};
+    let addGui = false;
+    if (addGui) {
+      var gui = new dat.GUI();
+      var parameters = { gridSpacing,
+        color: defaultColor,
+        grid: 1,
+        trees: 1,
+        koch: 1,
+        opacity: 1,
+        wavelength: 5.2,
+        amplitude: 7.03,
+        spacing: 2.0,
+        option: 2,
+        material: "Phong",
+        angle: 30,
+      reset: function() { resetCube() }};
 
-    uniforms.wavelength.value  = parameters.wavelength;
-    uniforms.amplitude.value   = parameters.amplitude;
-    uniforms.spacing.value   = parameters.spacing;
+      uniforms.wavelength.value  = parameters.wavelength;
+      uniforms.amplitude.value   = parameters.amplitude;
+      uniforms.spacing.value   = parameters.spacing;
 
-    var folder1 = gui.addFolder('Placement');
-    var _grid = folder1.add( parameters, 'grid' ).min(-1000).max(500).step(1).listen();
-    var _trees = folder1.add( parameters, 'trees' ).min(0).max(300).step(1).listen();
-    var _koch = folder1.add( parameters, 'koch' ).min(-800).max(800).step(1).listen();
-    folder1.open();
+      var folder1 = gui.addFolder('Placement');
+      var _grid = folder1.add( parameters, 'grid' ).min(-1000).max(500).step(1).listen();
+      var _trees = folder1.add( parameters, 'trees' ).min(0).max(300).step(1).listen();
+      var _koch = folder1.add( parameters, 'koch' ).min(-800).max(800).step(1).listen();
+      folder1.open();
 
-    gui.close()
-    var folder2 = gui.addFolder('Wave Properties');
-    var wavelength = folder2.add( parameters, 'wavelength' ).min(0.1).max(20).step(0.005).listen();
-    var amplitude = folder2.add( parameters, 'amplitude' ).min(0.001).max(20).step(0.005).listen();
-    var spacing = folder2.add( parameters, 'spacing' ).min(1.0).max(20).step(0.5).listen();
-    folder2.open();
+      gui.close()
+      var folder2 = gui.addFolder('Wave Properties');
+      var wavelength = folder2.add( parameters, 'wavelength' ).min(0.1).max(20).step(0.005).listen();
+      var amplitude = folder2.add( parameters, 'amplitude' ).min(0.001).max(20).step(0.005).listen();
+      var spacing = folder2.add( parameters, 'spacing' ).min(1.0).max(20).step(0.5).listen();
+      folder2.open();
 
-    uniforms.lsystemOption.value = 2;
-    uniforms2.lsystemOption.value = 0;
-    uniforms3.lsystemOption.value = 1;
-    uniforms.option.value = 2;
+      uniforms.lsystemOption.value = 2;
+      uniforms2.lsystemOption.value = 0;
+      uniforms3.lsystemOption.value = 1;
+      uniforms.option.value = 2;
 
-    wavelength.onChange(function(value) {   uniforms.wavelength.value = value;   });
-    amplitude.onChange(function(value)  {   uniforms.amplitude.value  = value;   });
-    spacing.onChange(function(value)    {   uniforms.spacing.value    = value;   });
+      wavelength.onChange(function(value) {   uniforms.wavelength.value = value;   });
+      amplitude.onChange(function(value)  {   uniforms.amplitude.value  = value;   });
+      spacing.onChange(function(value)    {   uniforms.spacing.value    = value;   });
 
-    _grid.onChange(function(value)   {   grid = value;   });
-    _trees.onChange(function(value) {    trees = value;   });
-    _koch.onChange(function(value)   {   koch = value;   });
+      _grid.onChange(function(value)   {   grid = value;   });
+      _trees.onChange(function(value) {    trees = value;   });
+      _koch.onChange(function(value)   {   koch = value;   });
 
-    var cubeColor = gui.addColor( parameters, 'color' ).name('Color').listen();
-    cubeColor.onChange(function(value) {
-      let c = d3Color.color(value);
+      var cubeColor = gui.addColor( parameters, 'color' ).name('Color').listen();
+      cubeColor.onChange(function(value) {
+        let c = d3Color.color(value);
+        c.r = c.r/100;
+        c.g = c.g/100;
+        c.b = c.b/100;
+        // uniforms.gridColor.value    = c;
+        // uniforms2.gridColor.value    = c;
+        // uniforms3.gridColor.value    = c;
+
+        scene.background.r = c.r;
+        scene.background.g = c.g;
+        scene.background.b = c.b;
+        console.log(scene)
+      });
+
+      let c = d3Color.color(defaultColor);
       c.r = c.r/100;
       c.g = c.g/100;
       c.b = c.b/100;
-      // uniforms.gridColor.value    = c;
-      // uniforms2.gridColor.value    = c;
-      // uniforms3.gridColor.value    = c;
+      uniforms.gridColor.value    = c;
+      uniforms.gridColor.value    = c;
 
-      scene.background.r = c.r;
-      scene.background.g = c.g;
-      scene.background.b = c.b;
-      console.log(scene)
-    });
-
-    let c = d3Color.color(defaultColor);
-    c.r = c.r/100;
-    c.g = c.g/100;
-    c.b = c.b/100;
-    uniforms.gridColor.value    = c;
-    uniforms.gridColor.value    = c;
-
-    var optionList = [0, 1, 2];
-    option = gui.add( parameters, 'option', optionList ).name('Grid type').listen();
-    option.onChange(function(value)    {   uniforms.option.value    = value;   });
+      var optionList = [0, 1, 2];
+      option = gui.add( parameters, 'option', optionList ).name('Grid type').listen();
+      option.onChange(function(value)    {   uniforms.option.value    = value;   });
 
 
-    // var cubeVisible = gui.add( parameters, 'secondGrid' ).name('second grid').listen();
-    // cubeVisible.onChange(function(value) {
-    //   secondGrid = value;
-    //   ground2.position.set(gridSpacing - gridShift,-500,0);
-    // });
+      // var cubeVisible = gui.add( parameters, 'secondGrid' ).name('second grid').listen();
+      // cubeVisible.onChange(function(value) {
+      //   secondGrid = value;
+      //   ground2.position.set(gridSpacing - gridShift,-500,0);
+      // });
 
 
-    var angle = gui.add( parameters, 'angle' ).min(1.0).max(360).step(1.0).listen();
-    angle.onChange(value => {
-      plane.rotation.x = THREE.Math.degToRad(value)
-    } )
+      var angle = gui.add( parameters, 'angle' ).min(1.0).max(360).step(1.0).listen();
+      angle.onChange(value => {
+        plane.rotation.x = THREE.Math.degToRad(value)
+      } )
+    }
 
   }
 
