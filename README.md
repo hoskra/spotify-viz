@@ -1,11 +1,9 @@
 # Fraviz
 > Online version of [Fraviz](http://fraviz.herokuapp.com) available on heroku.
 
-## Important Spotify API endpoinds
 
-* [Get Audio Analysis for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis)
-* [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
-* [Get a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/)
+![preview](doc/fraviz1.gif)
+Spotify account login is needed too see the application in action. To see results without this step, you can watch [youtube recording](https://www.youtube.com/watch?v=qopSUyWiNIM&list=PLwYK1ZXc9wKIlI_JlUBGm3Xk8U5ajQwxu&index=2).
 
 ## About Music Visualization
 
@@ -14,17 +12,14 @@
 * [Listenable accoustic map](http://everynoise.com)
 ---
 
-## Applications made using Spotify music analysis
-
-* [Track Analysis (beats, bars ...)](https://spotify-audio-analysis.glitch.me/analysis.html)
-* [Track Features Filter](https://www.klangspektrum.digital/)
-* [Visualize Track Features](https://spotify-audio-features.glitch.me)
-* [Create Spotify Playlist using Analysis](http://smarterplaylists.playlistmachinery.com/)
-* [More Spotify Applications](https://developer.spotify.com/community/showcase/)
-
-
 ## Fraviz Developer Documentation
 > Project forked from [spotify-viz](https://github.com/zachwinter/spotify-viz).
+
+### Important Spotify API endpoinds
+
+* [Get Audio Analysis for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis)
+* [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
+* [Get a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/)
 
 ### Used Libraries
 
@@ -88,3 +83,13 @@ https://learningmusic.ableton.com/index.html
   * [Three.js Fundamentals](https://threejsfundamentals.org)
   * [Three.js 2013](http://stemkoski.github.io/Three.js/#hello-world)
   * [Random Terrain](https://alteredqualia.com/three/examples/webgl_terrain_dynamic.html)
+
+  
+## Another Applications made using Spotify music analysis
+
+* [Track Analysis (beats, bars ...)](https://spotify-audio-analysis.glitch.me/analysis.html)
+* [Track Features Filter](https://www.klangspektrum.digital/)
+* [Visualize Track Features](https://spotify-audio-features.glitch.me)
+* [Create Spotify Playlist using Analysis](http://smarterplaylists.playlistmachinery.com/)
+* [More Spotify Applications](https://developer.spotify.com/community/showcase/)
+
