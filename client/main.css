@@ -1,0 +1,108 @@
+body {
+  background-color: black; }
+
+*, *:before, *:after {
+  margin: 0;
+  padding: 0; }
+
+.help {
+  text-align: right; }
+
+html, body, canvas {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: hidden; }
+
+#no-song {
+  position: absolute;
+  z-index: 3;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2em; }
+  #no-song .site-description {
+    color: gray; }
+  #no-song p {
+    padding-top: 3em; }
+    #no-song p span, #no-song p h1 {
+      display: block; }
+  #no-song .yellow-text {
+    color: yellow;
+    display: inline; }
+
+.fraviz-button {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.5em 0.8em;
+  border: 1px dashed white;
+  color: white; }
+
+.gui {
+  display: block;
+  position: absolute;
+  z-index: 5;
+  color: white;
+  padding: 16px; }
+  .gui span {
+    display: block; }
+  .gui#mode {
+    left: 80px;
+    top: 0px;
+    display: flex;
+    flex-flow: row; }
+    .gui#mode button:hover {
+      cursor: pointer; }
+    .gui#mode button {
+      background-color: rgba(255, 255, 255, 0.1);
+      margin-right: 0.6em;
+      padding: 0.5em 0.8em;
+      border: 1px dashed white;
+      color: white; }
+  .gui#song {
+    font-size: 1.6em;
+    left: 0px;
+    bottom: 0px; }
+    .gui#song #song-name {
+      padding-left: 2em; }
+  .gui#about {
+    text-align: right;
+    right: 0px;
+    bottom: 0px; }
+  .gui#stats {
+    color: white;
+    right: 0px;
+    top: 0px; }
+    .gui#stats .stat-explanation {
+      display: block;
+      margin: 5px;
+      text-align: right; }
+      .gui#stats .stat-explanation a, .gui#stats .stat-explanation a:hover, .gui#stats .stat-explanation a:visited {
+        background-color: black; }
+    .gui#stats tr {
+      margin: 0.2em;
+      background-color: white;
+      color: black; }
+      .gui#stats tr td:first-child {
+        text-align: right;
+        padding-right: 0.4em; }
+      .gui#stats tr td:last-child {
+        text-align: center; }
+
+.hiden {
+  display: none !important; }
+
+@media only screen and (max-width: 600px) {
+  .gui {
+    padding: 10px; }
+    .gui#song {
+      font-size: 1em; }
+    .gui#mode {
+      flex-flow: column; }
+  #stats-table {
+    height: 100px;
+    overflow-y: scroll;
+    overflow-x: hidden; } }

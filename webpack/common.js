@@ -9,7 +9,6 @@ module.exports = {
   entry: [
     'regenerator-runtime',
     './client/index.js',
-    './client/sass/main.scss'
   ],
   module: {
     rules: [
@@ -28,7 +27,6 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
-          'sass-loader'
         ]
       }
     ]
@@ -62,6 +60,6 @@ module.exports = {
       'node_modules',
       'client'
     ],
-    extensions: ['.js', '.css', '.scss', '.sass']
+    extensions: ['.js', '.css']
   }
 }

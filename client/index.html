@@ -1,61 +1,234 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Fraviz</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-    <style>
-      *, *:before, *:after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: monospace;
+
+<head>
+  <meta charset="UTF-8">
+  <title>Fraviz</title>
+  <meta name="viewport"
+    content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <style>
+    *,
+    *:before,
+    *:after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: monospace;
+    }
+
+    body {
+      background-color: black;
+    }
+
+    *,
+    *:before,
+    *:after {
+      margin: 0;
+      padding: 0;
+    }
+
+    .help {
+      text-align: right;
+    }
+
+    html,
+    body,
+    canvas {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      overflow: hidden;
+    }
+
+    #no-song {
+      position: absolute;
+      z-index: 3;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2em;
+    }
+
+    #no-song .site-description {
+      color: gray;
+    }
+
+    #no-song p {
+      padding-top: 3em;
+    }
+
+    #no-song p span,
+    #no-song p h1 {
+      display: block;
+    }
+
+    #no-song .yellow-text {
+      color: yellow;
+      display: inline;
+    }
+
+    .fraviz-button {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 0.5em 0.8em;
+      border: 1px dashed white;
+      color: white;
+    }
+
+    .gui {
+      display: block;
+      position: absolute;
+      z-index: 5;
+      color: white;
+      padding: 16px;
+    }
+
+    .gui span {
+      display: block;
+    }
+
+    .gui#mode {
+      left: 80px;
+      top: 0px;
+      display: flex;
+      flex-flow: row;
+    }
+
+    .gui#mode button:hover {
+      cursor: pointer;
+    }
+
+    .gui#mode button {
+      background-color: rgba(255, 255, 255, 0.1);
+      margin-right: 0.6em;
+      padding: 0.5em 0.8em;
+      border: 1px dashed white;
+      color: white;
+    }
+
+    .gui#song {
+      font-size: 1.6em;
+      left: 0px;
+      bottom: 0px;
+    }
+
+    .gui#song #song-name {
+      padding-left: 2em;
+    }
+
+    .gui#about {
+      text-align: right;
+      right: 0px;
+      bottom: 0px;
+    }
+
+    .gui#stats {
+      color: white;
+      right: 0px;
+      top: 0px;
+    }
+
+    .gui#stats .stat-explanation {
+      display: block;
+      margin: 5px;
+      text-align: right;
+    }
+
+    .gui#stats .stat-explanation a,
+    .gui#stats .stat-explanation a:hover,
+    .gui#stats .stat-explanation a:visited {
+      background-color: black;
+    }
+
+    .gui#stats tr {
+      margin: 0.2em;
+      background-color: white;
+      color: black;
+    }
+
+    .gui#stats tr td:first-child {
+      text-align: right;
+      padding-right: 0.4em;
+    }
+
+    .gui#stats tr td:last-child {
+      text-align: center;
+    }
+
+    .hiden {
+      display: none !important;
+    }
+
+    @media only screen and (max-width: 600px) {
+      .gui {
+        padding: 10px;
       }
-    </style>
-    <script
-      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-      integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
-      crossorigin="anonymous"></script>
-      <link rel="icon" href="https://i.imgur.com/vl1K37i.png" type="image/png" sizes="16x16">
-  </head>
-  <body>
 
-    <div class="gui" id="no-song">
-      <div>
-        <h1>Fraviz</h1>
-        <span class="site-description">fractal music visualizer</span>
-        <p>
-          <span>Please <span class="yellow-text"><a target="_blank" href="https://open.spotify.com">log in</a></span> and play a song with Spotify!</span>
-          <span>(Use another window or device as a music player.)</span>
-          <span class="help"><a href="https://github.com/hoskra/fraviz/tree/master/doc/help.md">[help]</a></span>
-        </p>
-      </div>
+      .gui#song {
+        font-size: 1em;
+      }
+
+      .gui#mode {
+        flex-flow: column;
+      }
+
+      #stats-table {
+        height: 100px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+      }
+    }
+  </style>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+  <link rel="icon" href="https://i.imgur.com/vl1K37i.png" type="image/png" sizes="16x16">
+</head>
+
+<body>
+
+  <div class="gui" id="no-song">
+    <div>
+      <h1>Fraviz</h1>
+      <span class="site-description">fractal music visualizer</span>
+      <p>
+        <span>Please <span class="yellow-text"><a target="_blank" href="https://open.spotify.com">log in</a></span> and
+          play a song with Spotify!</span>
+        <span>(Use another window or device as a music player.)</span>
+        <span class="help"><a href="https://github.com/hoskra/fraviz/tree/master/doc/help.md">[help]</a></span>
+      </p>
     </div>
+  </div>
 
-    <div class="gui" id="stats">
-      <div id="stats-table">
-        Loading ...
-      </div>
-      <span class="stat-explanation">
-        <a href="https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/" target="_blank">stat explanation</a>
-      </span>
+  <div class="gui" id="stats">
+    <div id="stats-table">
+      Loading ...
     </div>
+    <span class="stat-explanation">
+      <a href="https://developer.spotify.com/documentation/web-api/reference/get-audio-features/" target="_blank">stat
+        explanation</a>
+    </span>
+  </div>
 
-    <div class="gui" id="song">
-      <span id="song-artist"></span>
-      <span id="song-name"></span>
-    </div>
+  <div class="gui" id="song">
+    <span id="song-artist"></span>
+    <span id="song-name"></span>
+  </div>
 
-    <!-- <div class="gui" id="mode">
+  <!-- <div class="gui" id="mode">
       <button id="1">1</button><button id="2">2</button><button id="3">3</button><button id="4">4</button><button id="5">5</button>
     </div> -->
 
-    <div class="gui" id="about">
-      <span class="repo">
-        <a target="_blank" href="https://github.com/hoskra/fraviz/tree/master/doc">about</a> <a href="https://github.com/hoskra/fraviz/tree/master/doc/help.md">[help]</a>
-      </span>
-    </div>
+  <div class="gui" id="about">
+    <span class="repo">
+      <a target="_blank" href="https://github.com/hoskra/fraviz/tree/master/doc">about</a> <a
+        href="https://github.com/hoskra/fraviz/tree/master/doc/help.md">[help]</a>
+    </span>
+  </div>
 
-    <noscript>Oops! JavaScript is required to run this page.</noscript>
-  </body>
+  <noscript>Oops! JavaScript is required to run this page.</noscript>
+</body>
+
 </html>

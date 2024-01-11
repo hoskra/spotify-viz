@@ -17,9 +17,9 @@ Spotify account login is needed too see the application in action. To see result
 
 ### Important Spotify API endpoinds
 
-* [Get Audio Analysis for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-analysis)
-* [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-audio-features/)
-* [Get a Track](https://developer.spotify.com/documentation/web-api/reference/tracks/get-track/)
+* [Get Audio Analysis for a Track](https://developer.spotify.com/documentation/web-api/reference/get-audio-analysis)
+* [Get Audio Features for a Track](https://developer.spotify.com/documentation/web-api/reference/get-audio-features/)
+* [Get a Track](https://developer.spotify.com/documentation/web-api/reference/get-track/)
 
 ### Used Libraries
 
