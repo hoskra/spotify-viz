@@ -4,6 +4,7 @@ export function createXMLHttpRequest (type, url, async, headers) {
   for (var header in headers) {
     request.setRequestHeader(header, headers[header])
   }
+  // request.setRequestHeader('Access-Control-Allow-Origin', '*')
   return request
 }
 
